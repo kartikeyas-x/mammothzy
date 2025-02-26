@@ -12,6 +12,7 @@ import ActivityDetails from "@/components/create-activity/activity-details";
 import LocationDetails from "@/components/create-activity/location-details";
 import SuccessModal from "@/components/create-activity/success-modal";
 import { saveDraft, loadDraft, clearDraft } from "@/lib/draftStorage";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function CreateActivity() {
   const [step, setStep] = useState<1 | 2>(1);
@@ -84,17 +85,27 @@ export default function CreateActivity() {
         <main className="flex-1 p-8">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-3xl mx-auto">
-              {step === 1 ? (
-                <ActivityDetails
-                  form={form}
-                  onNext={() => setStep(2)}
-                />
-              ) : (
-                <LocationDetails
-                  form={form}
-                  onPrevious={() => setStep(1)}
-                />
-              )}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={step}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {step === 1 ? (
+                    <ActivityDetails
+                      form={form}
+                      onNext={() => setStep(2)}
+                    />
+                  ) : (
+                    <LocationDetails
+                      form={form}
+                      onPrevious={() => setStep(1)}
+                    />
+                  )}
+                </motion.div>
+              </AnimatePresence>
             </form>
           </Form>
         </main>
