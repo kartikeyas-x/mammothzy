@@ -41,7 +41,7 @@ const COUNTRY_CODES = [
 export default function LocationDetails({ form, onPrevious }: LocationDetailsProps) {
   return (
     <div className="space-y-8">
-      <h1 className="text-4xl font-bold text-gray-800">Create New Activity</h1>
+      <h1 className="text-4xl font-bold text-gray-800">Location Details</h1>
       <div className="space-y-6">
         <FormField
           control={form.control}

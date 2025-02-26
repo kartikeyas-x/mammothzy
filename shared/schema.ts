@@ -35,12 +35,32 @@ const locationTypeEnum = z.enum(["Provider Location", "User Location"]);
 
 export const insertActivitySchema = createInsertSchema(activities)
   .extend({
-    category: categoryEnum,
-    activityType: activityTypeEnum,
-    locationType: locationTypeEnum,
-    minMembers: z.number().min(1).optional(),
-    maxMembers: z.number().min(1).optional(),
-    contactNumber: z.string().min(10),
+    category: categoryEnum.describe("Activity category"),
+    activityType: activityTypeEnum.describe("Type of activity"),
+    locationType: locationTypeEnum.describe("Location type"),
+    minMembers: z.number().min(1, "Minimum members must be at least 1").optional(),
+    maxMembers: z.number().min(1, "Maximum members must be at least 1").optional(),
+    name: z.string().min(1, "Activity name is required").describe("Activity name"),
+    description: z.string().min(10, "Description must be at least 10 characters long").describe("Activity description"),
+    addressLine1: z.string().min(1, "Address line 1 is required").describe("Address line 1"),
+    zipCode: z.string().min(1, "ZIP code is required").describe("ZIP code"),
+    city: z.string().min(1, "City is required").describe("City"),
+    state: z.string().min(1, "State is required").describe("State"),
+    contactNumber: z.string().min(10, "Contact number must be at least 10 digits").describe("Contact number"),
+    contactName: z.string().min(1, "Contact name is required").describe("Contact name"),
+  })
+  .superRefine((data, ctx) => {
+    if (
+      data.minMembers !== undefined &&
+      data.maxMembers !== undefined &&
+      data.maxMembers < data.minMembers
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Maximum members must be greater than or equal to minimum members",
+        path: ["maxMembers"],
+      });
+    }
   });
 
 export type InsertActivity = z.infer<typeof insertActivitySchema>;

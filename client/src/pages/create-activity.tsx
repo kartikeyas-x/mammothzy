@@ -64,7 +64,22 @@ export default function CreateActivity() {
       await apiRequest("POST", "/api/activities", data);
       setShowSuccess(true);
       clearDraft();
-      form.reset();
+      form.reset({
+        name: '',
+        category: undefined,
+        description: '',
+        activityType: undefined,
+        locationType: undefined,
+        minMembers: undefined,
+        maxMembers: undefined,
+        addressLine1: '',
+        addressLine2: '',
+        zipCode: '',
+        city: '',
+        state: '',
+        contactNumber: '',
+        contactName: ''
+      });
       setStep(1);
     } catch (error) {
       toast({
