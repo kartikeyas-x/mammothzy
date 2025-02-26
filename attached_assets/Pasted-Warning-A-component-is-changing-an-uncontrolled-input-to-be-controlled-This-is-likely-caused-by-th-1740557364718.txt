@@ -1,0 +1,24 @@
+Warning: A component is changing an uncontrolled input to be controlled. This is likely caused by the value changing from undefined to a defined value, which should not happen. Decide between using a controlled or uncontrolled input element for the lifetime of the component. More info: https://reactjs.org/link/controlled-components
+    at input
+    at _c (https://e2d99884-328e-477e-9197-b3208a84c4e0-00-3mjoovzglvw8d.kirk.replit.dev/src/components/ui/input.tsx:20:11)
+    at https://e2d99884-328e-477e-9197-b3208a84c4e0-00-3mjoovzglvw8d.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-UACHJROW.js?v=c8823ca6:52:11
+    at https://e2d99884-328e-477e-9197-b3208a84c4e0-00-3mjoovzglvw8d.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-UACHJROW.js?v=c8823ca6:33:11
+    at https://e2d99884-328e-477e-9197-b3208a84c4e0-00-3mjoovzglvw8d.kirk.replit.dev/src/components/ui/form.tsx:129:9
+    at div
+    at https://e2d99884-328e-477e-9197-b3208a84c4e0-00-3mjoovzglvw8d.kirk.replit.dev/src/components/ui/form.tsx:71:6
+    at Controller (https://e2d99884-328e-477e-9197-b3208a84c4e0-00-3mjoovzglvw8d.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-YABUFNLM.js?v=c8823ca6:313:35)
+    at FormField (https://e2d99884-328e-477e-9197-b3208a84c4e0-00-3mjoovzglvw8d.kirk.replit.dev/src/components/ui/form.tsx:32:6)
+    at div
+    at div
+    at ActivityDetails (https://e2d99884-328e-477e-9197-b3208a84c4e0-00-3mjoovzglvw8d.kirk.replit.dev/src/components/create-activity/activity-details.tsx:29:43)
+    at form
+    at FormProvider (https://e2d99884-328e-477e-9197-b3208a84c4e0-00-3mjoovzglvw8d.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-YABUFNLM.js?v=c8823ca6:102:11)
+    at main
+    at div
+    at div
+    at CreateActivity (https://e2d99884-328e-477e-9197-b3208a84c4e0-00-3mjoovzglvw8d.kirk.replit.dev/src/pages/create-activity.tsx:33:27)
+    at Route (https://e2d99884-328e-477e-9197-b3208a84c4e0-00-3mjoovzglvw8d.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=c8823ca6:323:16)
+    at Switch (https://e2d99884-328e-477e-9197-b3208a84c4e0-00-3mjoovzglvw8d.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=c8823ca6:379:17)
+    at Router
+    at QueryClientProvider (https://e2d99884-328e-477e-9197-b3208a84c4e0-00-3mjoovzglvw8d.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=c8823ca6:2805:3)
+    at App

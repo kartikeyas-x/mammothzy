@@ -20,11 +20,20 @@ export default function CreateActivity() {
   const form = useForm<InsertActivity>({
     resolver: zodResolver(insertActivitySchema),
     defaultValues: {
+      name: "",
+      category: "Adventure & Games",
+      description: "",
       activityType: "Indoor",
       locationType: "Provider Location",
-      addressLine2: "", // Initialize optional fields
       minMembers: undefined,
       maxMembers: undefined,
+      addressLine1: "",
+      addressLine2: "",
+      zipCode: "",
+      city: "",
+      state: "",
+      contactNumber: "",
+      contactName: "",
     },
   });
 
