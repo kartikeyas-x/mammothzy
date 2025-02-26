@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertActivitySchema, type InsertActivity } from "@shared/schema";
@@ -11,6 +11,7 @@ import Sidebar from "@/components/layout/sidebar";
 import ActivityDetails from "@/components/create-activity/activity-details";
 import LocationDetails from "@/components/create-activity/location-details";
 import SuccessModal from "@/components/create-activity/success-modal";
+import { saveDraft, loadDraft, clearDraft } from "@/lib/draftStorage";
 
 export default function CreateActivity() {
   const [step, setStep] = useState<1 | 2>(1);
@@ -37,10 +38,31 @@ export default function CreateActivity() {
     },
   });
 
+  // Load draft on mount
+  useEffect(() => {
+    const draft = loadDraft();
+    if (draft) {
+      form.reset(draft);
+      toast({
+        title: "Draft Loaded",
+        description: "Your previous draft has been restored.",
+      });
+    }
+  }, [form, toast]);
+
+  // Auto-save draft when form values change
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      saveDraft(value as Partial<InsertActivity>);
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
+
   const onSubmit = async (data: InsertActivity) => {
     try {
       await apiRequest("POST", "/api/activities", data);
       setShowSuccess(true);
+      clearDraft();
       form.reset();
       setStep(1);
     } catch (error) {
