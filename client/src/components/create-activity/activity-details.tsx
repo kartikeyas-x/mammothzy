@@ -28,14 +28,14 @@ export default function ActivityDetails({ form, onNext }: ActivityDetailsProps) 
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-bold">Create New Activity</h1>
-      <div className="space-y-6">
+      <h1 className="text-4xl font-bold text-gray-800">Create New Activity</h1>
+      <div className="space-y-8">
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Activity Name <span className="text-red-500">*</span></FormLabel>
+              <FormLabel className="text-gray-700">Activity Name <span className="text-red-500">*</span></FormLabel>
               <FormControl>
                 <Input placeholder="Eg: Cooking class in Palo Alto" {...field} className="rounded-lg" />
               </FormControl>
@@ -49,27 +49,30 @@ export default function ActivityDetails({ form, onNext }: ActivityDetailsProps) 
           name="category"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Select the best category to describe your activity <span className="text-red-500">*</span></FormLabel>
+              <FormLabel className="text-gray-700">Select the best category to describe your activity <span className="text-red-500">*</span></FormLabel>
               <FormControl>
                 <RadioGroup
                   onValueChange={field.onChange}
                   defaultValue={field.value}
-                  className="flex flex-wrap gap-4"
+                  className="flex flex-col space-y-3"
                 >
                   {[
-                    "Adventure & Games",
-                    "Creative Expression",
-                    "Food & Drink",
-                    "Learning & Development",
-                    "Sports and Fitness",
-                    "Volunteering",
-                    "Other"
+                    { value: "Adventure & Games", icon: "🎮" },
+                    { value: "Creative Expression", icon: "🎨" },
+                    { value: "Food & Drink", icon: "🍳" },
+                    { value: "Learning & Development", icon: "📚" },
+                    { value: "Sports and Fitness", icon: "⚽" },
+                    { value: "Volunteering", icon: "🤝" },
+                    { value: "Other", icon: "✨" }
                   ].map((category) => (
-                    <FormItem key={category} className="flex items-center space-x-2">
+                    <FormItem key={category.value} className="flex items-center space-x-3">
                       <FormControl>
-                        <RadioGroupItem value={category} />
+                        <RadioGroupItem value={category.value} />
                       </FormControl>
-                      <FormLabel className="mb-0">{category}</FormLabel>
+                      <FormLabel className="mb-0">
+                        <span className="mr-2">{category.icon}</span>
+                        {category.value}
+                      </FormLabel>
                     </FormItem>
                   ))}
                 </RadioGroup>
@@ -84,7 +87,7 @@ export default function ActivityDetails({ form, onNext }: ActivityDetailsProps) 
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Activity Description <span className="text-red-500">*</span></FormLabel>
+              <FormLabel className="text-gray-700">Activity Description <span className="text-red-500">*</span></FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Activity Description"
@@ -102,19 +105,26 @@ export default function ActivityDetails({ form, onNext }: ActivityDetailsProps) 
           name="activityType"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Please select the activity type <span className="text-red-500">*</span></FormLabel>
+              <FormLabel className="text-gray-700">Please select the activity type <span className="text-red-500">*</span></FormLabel>
               <FormControl>
                 <RadioGroup
                   onValueChange={field.onChange}
                   defaultValue={field.value}
-                  className="flex gap-4"
+                  className="flex flex-col space-y-3"
                 >
-                  {["Indoor", "Outdoor", "Virtual"].map((type) => (
-                    <FormItem key={type} className="flex items-center space-x-2">
+                  {[
+                    { value: "Indoor", icon: "🏠" },
+                    { value: "Outdoor", icon: "🌳" },
+                    { value: "Virtual", icon: "💻" }
+                  ].map((type) => (
+                    <FormItem key={type.value} className="flex items-center space-x-3">
                       <FormControl>
-                        <RadioGroupItem value={type} />
+                        <RadioGroupItem value={type.value} />
                       </FormControl>
-                      <FormLabel className="mb-0">{type}</FormLabel>
+                      <FormLabel className="mb-0">
+                        <span className="mr-2">{type.icon}</span>
+                        {type.value}
+                      </FormLabel>
                     </FormItem>
                   ))}
                 </RadioGroup>
@@ -129,22 +139,25 @@ export default function ActivityDetails({ form, onNext }: ActivityDetailsProps) 
           name="locationType"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Please select the type of location <span className="text-red-500">*</span></FormLabel>
+              <FormLabel className="text-gray-700">Please select the type of location <span className="text-red-500">*</span></FormLabel>
               <FormControl>
                 <RadioGroup
                   onValueChange={field.onChange}
                   defaultValue={field.value}
-                  className="flex gap-4"
+                  className="flex flex-col space-y-3"
                 >
                   {[
-                    { value: "Provider Location", label: "Provider Location (activity takes place at the provider's venue)" },
-                    { value: "User Location", label: "User Location (activity takes place at the user's venue)" }
+                    { value: "Provider Location", label: "Provider Location (activity takes place at the provider's venue)", icon: "🏢" },
+                    { value: "User Location", label: "User Location (activity takes place at the user's venue)", icon: "🏡" }
                   ].map((type) => (
-                    <FormItem key={type.value} className="flex items-center space-x-2">
+                    <FormItem key={type.value} className="flex items-center space-x-3">
                       <FormControl>
                         <RadioGroupItem value={type.value} />
                       </FormControl>
-                      <FormLabel className="mb-0">{type.label}</FormLabel>
+                      <FormLabel className="mb-0">
+                        <span className="mr-2">{type.icon}</span>
+                        {type.label}
+                      </FormLabel>
                     </FormItem>
                   ))}
                 </RadioGroup>
@@ -155,14 +168,14 @@ export default function ActivityDetails({ form, onNext }: ActivityDetailsProps) 
         />
 
         <div className="space-y-4">
-          <FormLabel>How many members can take part in the activity?</FormLabel>
+          <FormLabel className="text-gray-700">How many members can take part in the activity?</FormLabel>
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="minMembers"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Minimum Members</FormLabel>
+                  <FormLabel className="text-gray-700">Minimum Members</FormLabel>
                   <FormControl>
                     <Input type="number" {...field} className="rounded-lg" />
                   </FormControl>
@@ -175,7 +188,7 @@ export default function ActivityDetails({ form, onNext }: ActivityDetailsProps) 
               name="maxMembers"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Maximum Members</FormLabel>
+                  <FormLabel className="text-gray-700">Maximum Members</FormLabel>
                   <FormControl>
                     <Input type="number" {...field} className="rounded-lg" />
                   </FormControl>
@@ -190,7 +203,7 @@ export default function ActivityDetails({ form, onNext }: ActivityDetailsProps) 
           <Button 
             type="button" 
             onClick={validateStep}
-            className="group relative"
+            className="group relative bg-gray-900 hover:bg-gray-800"
           >
             Save and Continue
             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
