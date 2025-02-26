@@ -6,8 +6,8 @@ interface SidebarProps {
 
 export default function Sidebar({ currentStep }: SidebarProps) {
   const steps = [
-    { number: 1, name: "Activity Details" },
-    { number: 2, name: "Location Details" },
+    { number: 1, name: "Activity Details", emoji: "🎯" },
+    { number: 2, name: "Location Details", emoji: "📍" },
   ];
 
   return (
@@ -19,23 +19,23 @@ export default function Sidebar({ currentStep }: SidebarProps) {
             className={cn(
               "flex items-center gap-3 p-3 rounded-lg",
               currentStep === step.number
-                ? "bg-primary text-primary-foreground"
+                ? "bg-gray-900 text-white"
                 : currentStep > step.number
-                ? "text-primary"
+                ? "text-gray-900"
                 : "text-gray-500"
             )}
           >
             <div
               className={cn(
-                "w-6 h-6 rounded-full flex items-center justify-center text-sm border",
+                "w-8 h-8 rounded-full flex items-center justify-center text-xl",
                 currentStep === step.number
-                  ? "border-primary-foreground"
+                  ? "bg-white text-gray-900"
                   : currentStep > step.number
-                  ? "border-primary"
-                  : "border-gray-500"
+                  ? "bg-gray-900 text-white"
+                  : "bg-gray-200 text-gray-500"
               )}
             >
-              {step.number}
+              {step.emoji}
             </div>
             <span className="font-medium">{step.name}</span>
           </div>
