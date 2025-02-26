@@ -22,13 +22,15 @@ export default function CreateActivity() {
     defaultValues: {
       activityType: "Indoor",
       locationType: "Provider Location",
+      addressLine2: "", // Initialize optional fields
+      minMembers: undefined,
+      maxMembers: undefined,
     },
   });
 
   const onSubmit = async (data: InsertActivity) => {
     try {
       await apiRequest("POST", "/api/activities", data);
-      console.log("Form submitted:", data);
       setShowSuccess(true);
       form.reset();
       setStep(1);
@@ -42,7 +44,7 @@ export default function CreateActivity() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
 
       <div className="flex-1 flex">

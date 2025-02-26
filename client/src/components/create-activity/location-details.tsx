@@ -41,16 +41,16 @@ const COUNTRY_CODES = [
 export default function LocationDetails({ form, onPrevious }: LocationDetailsProps) {
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-bold">Create New Activity</h1>
+      <h1 className="text-4xl font-bold text-gray-800">Create New Activity</h1>
       <div className="space-y-6">
         <FormField
           control={form.control}
           name="addressLine1"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Address Line 1 <span className="text-red-500">*</span></FormLabel>
+              <FormLabel className="text-gray-700">Address Line 1 <span className="text-red-500">*</span></FormLabel>
               <FormControl>
-                <Input placeholder="House number and street name" {...field} className="rounded-lg" />
+                <Input placeholder="House number and street name" {...field} className="rounded-lg bg-white" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -60,11 +60,17 @@ export default function LocationDetails({ form, onPrevious }: LocationDetailsPro
         <FormField
           control={form.control}
           name="addressLine2"
-          render={({ field }) => (
+          render={({ field: { value, onChange, ...field } }) => (
             <FormItem>
-              <FormLabel>Address Line 2</FormLabel>
+              <FormLabel className="text-gray-700">Address Line 2</FormLabel>
               <FormControl>
-                <Input placeholder="Other information, e.g., building name, landmark, etc." {...field} className="rounded-lg" />
+                <Input 
+                  placeholder="Other information, e.g., building name, landmark, etc." 
+                  value={value || ''} 
+                  onChange={onChange}
+                  className="rounded-lg bg-white" 
+                  {...field} 
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -76,9 +82,9 @@ export default function LocationDetails({ form, onPrevious }: LocationDetailsPro
           name="zipCode"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>ZIP Code <span className="text-red-500">*</span></FormLabel>
+              <FormLabel className="text-gray-700">ZIP Code <span className="text-red-500">*</span></FormLabel>
               <FormControl>
-                <Input placeholder="eg: 123 467" {...field} className="rounded-lg" />
+                <Input placeholder="eg: 123 467" {...field} className="rounded-lg bg-white" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -91,9 +97,9 @@ export default function LocationDetails({ form, onPrevious }: LocationDetailsPro
             name="city"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>City <span className="text-red-500">*</span></FormLabel>
+                <FormLabel className="text-gray-700">City <span className="text-red-500">*</span></FormLabel>
                 <FormControl>
-                  <Input {...field} className="rounded-lg" />
+                  <Input {...field} className="rounded-lg bg-white" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -105,10 +111,10 @@ export default function LocationDetails({ form, onPrevious }: LocationDetailsPro
             name="state"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>State <span className="text-red-500">*</span></FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormLabel className="text-gray-700">State <span className="text-red-500">*</span></FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger className="rounded-lg">
+                    <SelectTrigger className="rounded-lg bg-white">
                       <SelectValue placeholder="Select a state" />
                     </SelectTrigger>
                   </FormControl>
@@ -127,7 +133,7 @@ export default function LocationDetails({ form, onPrevious }: LocationDetailsPro
         </div>
 
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold">Contact Details</h2>
+          <h2 className="text-lg font-semibold text-gray-800">Contact Details</h2>
 
           <div className="grid grid-cols-2 gap-4">
             <FormField
@@ -135,11 +141,14 @@ export default function LocationDetails({ form, onPrevious }: LocationDetailsPro
               name="contactNumber"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Contact Number <span className="text-red-500">*</span></FormLabel>
+                  <FormLabel className="text-gray-700">Contact Number <span className="text-red-500">*</span></FormLabel>
                   <div className="flex gap-2">
-                    <Select onValueChange={(value) => field.onChange(`${value}${field.value?.replace(/^\+\d+/, '')}`)}>
+                    <Select 
+                      onValueChange={(value) => field.onChange(`${value}${field.value?.replace(/^\+\d+/, '')}`)}
+                      defaultValue="+1"
+                    >
                       <FormControl>
-                        <SelectTrigger className="w-24 rounded-lg">
+                        <SelectTrigger className="w-24 rounded-lg bg-white">
                           <SelectValue placeholder="+1" />
                         </SelectTrigger>
                       </FormControl>
@@ -151,7 +160,7 @@ export default function LocationDetails({ form, onPrevious }: LocationDetailsPro
                         ))}
                       </SelectContent>
                     </Select>
-                    <Input type="tel" {...field} className="flex-1 rounded-lg" />
+                    <Input type="tel" {...field} className="flex-1 rounded-lg bg-white" />
                   </div>
                   <FormMessage />
                 </FormItem>
@@ -163,9 +172,9 @@ export default function LocationDetails({ form, onPrevious }: LocationDetailsPro
               name="contactName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Contact Name <span className="text-red-500">*</span></FormLabel>
+                  <FormLabel className="text-gray-700">Contact Name <span className="text-red-500">*</span></FormLabel>
                   <FormControl>
-                    <Input {...field} className="rounded-lg" />
+                    <Input {...field} className="rounded-lg bg-white" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -175,11 +184,19 @@ export default function LocationDetails({ form, onPrevious }: LocationDetailsPro
         </div>
 
         <div className="flex justify-between">
-          <Button type="button" variant="outline" onClick={onPrevious} className="group">
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={onPrevious} 
+            className="group text-gray-800 border-gray-300"
+          >
             <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
             Previous
           </Button>
-          <Button type="submit">
+          <Button 
+            type="submit"
+            className="bg-gray-800 hover:bg-gray-700 text-white"
+          >
             Submit
           </Button>
         </div>

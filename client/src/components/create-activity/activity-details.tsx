@@ -21,7 +21,7 @@ interface ActivityDetailsProps {
 
 export default function ActivityDetails({ form, onNext }: ActivityDetailsProps) {
   const validateStep = () => {
-    const fields = ["name", "category", "description", "activityType", "locationType", "minMembers", "maxMembers"];
+    const fields = ["name", "category", "description", "activityType", "locationType"];
     const isValid = fields.every(field => !form.formState.errors[field as keyof InsertActivity]);
     if (isValid) onNext();
   };
@@ -37,7 +37,7 @@ export default function ActivityDetails({ form, onNext }: ActivityDetailsProps) 
             <FormItem>
               <FormLabel className="text-gray-700">Activity Name <span className="text-red-500">*</span></FormLabel>
               <FormControl>
-                <Input placeholder="Eg: Cooking class in Palo Alto" {...field} className="rounded-lg" />
+                <Input placeholder="Eg: Cooking class in Palo Alto" {...field} className="rounded-lg bg-white" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -67,9 +67,12 @@ export default function ActivityDetails({ form, onNext }: ActivityDetailsProps) 
                   ].map((category) => (
                     <FormItem key={category.value} className="flex items-center space-x-3">
                       <FormControl>
-                        <RadioGroupItem value={category.value} />
+                        <RadioGroupItem 
+                          value={category.value} 
+                          className="text-gray-800 border-gray-400 focus:ring-gray-800"
+                        />
                       </FormControl>
-                      <FormLabel className="mb-0">
+                      <FormLabel className="mb-0 text-gray-700">
                         <span className="mr-2">{category.icon}</span>
                         {category.value}
                       </FormLabel>
@@ -91,7 +94,7 @@ export default function ActivityDetails({ form, onNext }: ActivityDetailsProps) 
               <FormControl>
                 <Textarea
                   placeholder="Activity Description"
-                  className="min-h-[100px] rounded-lg"
+                  className="min-h-[100px] rounded-lg bg-white"
                   {...field}
                 />
               </FormControl>
@@ -119,9 +122,12 @@ export default function ActivityDetails({ form, onNext }: ActivityDetailsProps) 
                   ].map((type) => (
                     <FormItem key={type.value} className="flex items-center space-x-3">
                       <FormControl>
-                        <RadioGroupItem value={type.value} />
+                        <RadioGroupItem 
+                          value={type.value} 
+                          className="text-gray-800 border-gray-400 focus:ring-gray-800"
+                        />
                       </FormControl>
-                      <FormLabel className="mb-0">
+                      <FormLabel className="mb-0 text-gray-700">
                         <span className="mr-2">{type.icon}</span>
                         {type.value}
                       </FormLabel>
@@ -152,9 +158,12 @@ export default function ActivityDetails({ form, onNext }: ActivityDetailsProps) 
                   ].map((type) => (
                     <FormItem key={type.value} className="flex items-center space-x-3">
                       <FormControl>
-                        <RadioGroupItem value={type.value} />
+                        <RadioGroupItem 
+                          value={type.value} 
+                          className="text-gray-800 border-gray-400 focus:ring-gray-800"
+                        />
                       </FormControl>
-                      <FormLabel className="mb-0">
+                      <FormLabel className="mb-0 text-gray-700">
                         <span className="mr-2">{type.icon}</span>
                         {type.label}
                       </FormLabel>
@@ -173,11 +182,17 @@ export default function ActivityDetails({ form, onNext }: ActivityDetailsProps) 
             <FormField
               control={form.control}
               name="minMembers"
-              render={({ field }) => (
+              render={({ field: { value, onChange, ...field }}) => (
                 <FormItem>
                   <FormLabel className="text-gray-700">Minimum Members</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} className="rounded-lg" />
+                    <Input 
+                      type="number" 
+                      value={value || ''} 
+                      onChange={e => onChange(e.target.value ? Number(e.target.value) : undefined)}
+                      className="rounded-lg bg-white" 
+                      {...field} 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -186,11 +201,17 @@ export default function ActivityDetails({ form, onNext }: ActivityDetailsProps) 
             <FormField
               control={form.control}
               name="maxMembers"
-              render={({ field }) => (
+              render={({ field: { value, onChange, ...field }}) => (
                 <FormItem>
                   <FormLabel className="text-gray-700">Maximum Members</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} className="rounded-lg" />
+                    <Input 
+                      type="number" 
+                      value={value || ''} 
+                      onChange={e => onChange(e.target.value ? Number(e.target.value) : undefined)}
+                      className="rounded-lg bg-white" 
+                      {...field} 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -203,7 +224,7 @@ export default function ActivityDetails({ form, onNext }: ActivityDetailsProps) 
           <Button 
             type="button" 
             onClick={validateStep}
-            className="group relative bg-gray-900 hover:bg-gray-800"
+            className="group relative bg-gray-800 hover:bg-gray-700 text-white"
           >
             Save and Continue
             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
