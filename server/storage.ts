@@ -1,32 +1,59 @@
-
 import { db } from "../db";
 import { activities } from "@shared/schema";
 import { eq } from "drizzle-orm";
-import type { InsertActivity } from "@shared/schema";
+import type { InsertActivity, Activity } from "@shared/schema"; // Assuming Activity type is defined elsewhere
 
 class Storage {
   async healthCheck() {
     try {
-      // Simple query to check if database is responsive
-      await db.select({ count: activities.id }).limit(1);
-      return { status: "healthy", timestamp: new Date().toISOString() };
+      // Test basic connection
+      const result = await db.execute(db.sql`SELECT 1 as test`);
+
+      // Check if activities table exists
+      const tableCheck = await db.execute(db.sql`
+        SELECT EXISTS (
+          SELECT FROM information_schema.tables 
+          WHERE table_schema = 'public' 
+          AND table_name = 'activities'
+        );
+      `);
+
+      const tableExists = tableCheck[0]?.exists === true;
+
+      return { 
+        status: tableExists ? "healthy" : "warning", 
+        message: tableExists 
+          ? "Database connection and schema are healthy" 
+          : "Database connected but activities table does not exist",
+        connection: "successful",
+        schema: tableExists ? "complete" : "missing",
+        tables: {
+          activities: tableExists
+        }
+      };
     } catch (error) {
-      console.error("Database health check failed:", error);
       return { 
         status: "unhealthy", 
+        message: "Database connection failed", 
         error: error.message,
-        timestamp: new Date().toISOString()
+        connection: "failed" 
       };
     }
   }
 
-  async createActivity(activity: InsertActivity) {
+  async createActivity(activity: InsertActivity): Promise<Activity> {
     try {
-      // Insert and return the created activity
       const result = await db.insert(activities).values(activity).returning();
       return result[0];
     } catch (error) {
       console.error("Failed to create activity:", error);
+
+      // Check if this is a "relation does not exist" error
+      if (error.code === '42P01') {
+        console.error("Table 'activities' does not exist. Try redeploying or running migrations.");
+        throw new Error(`Database error: The activities table does not exist. Please ensure migrations have been run.`);
+      }
+
       throw new Error(`Database error: ${error.message}`);
     }
   }

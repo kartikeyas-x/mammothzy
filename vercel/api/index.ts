@@ -3,6 +3,69 @@ import serverless from 'serverless-http';
 import express from 'express';
 import { registerRoutes } from '../../server/routes';
 import { serveStatic, log } from '../../server/vite';
+import { neon } from "@neondatabase/serverless";
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
+
+// Function to ensure database tables exist
+async function ensureTables() {
+  console.log('Checking and creating database tables if needed...');
+  const connectionString = process.env.DATABASE_URL;
+  
+  if (!connectionString) {
+    console.error('DATABASE_URL not set!');
+    return false;
+  }
+  
+  try {
+    console.log('Connecting to database...');
+    const sql = neon(connectionString);
+    
+    // Check if activities table exists
+    const tableResult = await sql`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'activities'
+      );
+    `;
+    
+    const tableExists = tableResult[0].exists;
+    console.log(`Activities table exists: ${tableExists ? 'YES' : 'NO'}`);
+    
+    // Create table if it doesn't exist
+    if (!tableExists) {
+      console.log('Creating activities table...');
+      await sql`
+        CREATE TABLE IF NOT EXISTS activities (
+          id SERIAL PRIMARY KEY,
+          name TEXT NOT NULL,
+          category TEXT NOT NULL,
+          description TEXT NOT NULL,
+          activity_type TEXT NOT NULL,
+          location_type TEXT NOT NULL,
+          min_members INTEGER,
+          max_members INTEGER,
+          address_line_1 TEXT NOT NULL,
+          address_line_2 TEXT,
+          zip_code TEXT NOT NULL,
+          city TEXT NOT NULL,
+          state TEXT NOT NULL,
+          contact_number TEXT NOT NULL,
+          contact_name TEXT NOT NULL
+        )
+      `;
+      console.log('✅ Table created successfully!');
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('❌ Database setup failed:', error);
+    return false;
+  }
+}
 
 // Create an Express app instance specifically for serverless
 const app = express();
@@ -34,6 +97,9 @@ app.use((req, res, next) => {
 // Initialize async handler 
 const initServer = async () => {
   try {
+    // Ensure database tables exist
+    await ensureTables();
+    
     // Set up routes
     await registerRoutes(app);
     
