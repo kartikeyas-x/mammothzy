@@ -15,7 +15,9 @@ async function testCreateActivity() {
     address_line_1: "123 Test Street", // Include this required field
     zip_code: "12345", // Include this required field
     city: "Test City",
-    state: "Test State"
+    state: "Test State",
+    contact_number: "555-123-4567", // Required field
+    contact_name: "Test Contact" // Required field
   };
 
   try {

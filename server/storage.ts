@@ -50,6 +50,11 @@ class Storage {
         location_type: activity.location_type || "In-person", // Default to In-person if not specified
         address_line_1: activity.address_line_1 || "N/A", // Default for the not-null constraint
         zip_code: activity.zip_code || "00000", // Default for the not-null constraint
+        contact_number: activity.contact_number || "000-000-0000", // Default for the not-null constraint
+        contact_name: activity.contact_name || "Default Contact", // Default for the not-null constraint
+        description: activity.description || "No description provided", // Default for the not-null constraint
+        city: activity.city || "Default City", // Default for the not-null constraint
+        state: activity.state || "Default State", // Default for the not-null constraint
       };
       
       console.log("Creating activity with defaults:", JSON.stringify(activityWithDefaults));
