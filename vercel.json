@@ -16,12 +16,16 @@
   ],
   "routes": [
     {
+      "src": "/api/ping",
+      "dest": "vercel/api/ping.ts"
+    },
+    {
       "src": "/api/healthcheck",
       "dest": "vercel/api/healthcheck.ts"
     },
     {
-      "src": "/api/ping",
-      "dest": "vercel/api/ping.ts"
+      "src": "/api/debug-db",
+      "dest": "vercel/api/debug-db.ts"
     },
     {
       "src": "/api/(.*)",

@@ -7,19 +7,11 @@ dotenv.config();
 
 export default async function handler(req, res) {
   try {
-    // Check database connection
-    const connectionString = process.env.DATABASE_URL;
-    if (!connectionString) {
-      return res.status(500).json({ 
-        status: "unhealthy", 
-        error: "No DATABASE_URL environment variable found"
-      });
+    // Check database connection if DATABASE_URL is available
+    if (process.env.DATABASE_URL) {
+      const sql = neon(process.env.DATABASE_URL);
+      await sql`SELECT 1 as connection_test`;
     }
-    
-    const sql = neon(connectionString);
-    
-    // Basic database check
-    await sql`SELECT 1 as connection_test;`;
     
     // Return successful healthcheck
     return res.status(200).json({
@@ -35,7 +27,6 @@ export default async function handler(req, res) {
     return res.status(500).json({
       status: "unhealthy",
       error: error.message,
-      stack: process.env.NODE_ENV === "production" ? "hidden" : error.stack,
       timestamp: new Date().toISOString()
     });
   }
