@@ -23,8 +23,8 @@ app.use((req, res, next) => {
   next();
 });
 
-// Register your API routes
-const handler = async () => {
+// Register your API routes and create serverless handler
+const createHandler = async () => {
   await registerRoutes(app);
   return serverless(app);
 };
@@ -35,4 +35,5 @@ export const config = {
   }
 };
 
-export default handler();
+// Export the serverless handler
+export default createHandler();
