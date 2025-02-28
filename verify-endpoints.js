@@ -31,9 +31,18 @@ async function testEndpoint(path) {
 // Test the main endpoints
 async function main() {
   console.log(`Checking endpoints at ${BASE_URL}`);
-  await testEndpoint('/api/healthcheck');
-  await testEndpoint('/api/debug-db');
-  await testEndpoint('/');
+  const endpoints = [
+    '/api/healthcheck',
+    '/api',
+    '/api/debug-db',
+    '/api/debug',
+    '/api/detailed-debug'
+  ];
+  
+  for (const endpoint of endpoints) {
+    console.log(`\nTesting ${endpoint}:`);
+    await testEndpoint(endpoint);
+  }
 }
 
 main().catch(console.error);

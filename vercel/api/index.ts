@@ -26,10 +26,3 @@ app.get('/api', (req, res) => {
 
 // Export serverless handler
 export default serverless(app);
-
-// Export Vercel config
-export const config = {
-  api: {
-    bodyParser: false
-  }
-};
