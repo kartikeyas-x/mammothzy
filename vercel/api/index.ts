@@ -1,3 +1,4 @@
+
 import express from "express";
 import { registerRoutes } from "../../server/routes";
 import { serveStatic, log } from "../../server/vite";
@@ -23,12 +24,15 @@ app.use((req, res, next) => {
 });
 
 // Register your API routes
-registerRoutes(app);
+const handler = async () => {
+  await registerRoutes(app);
+  return serverless(app);
+};
 
-// Serve static files (only in production; adjust if needed)
-if (process.env.NODE_ENV !== "development") {
-  serveStatic(app);
-}
+export const config = {
+  api: {
+    bodyParser: false,
+  }
+};
 
-// Export the serverless handler
-export default serverless(app);
+export default handler();
