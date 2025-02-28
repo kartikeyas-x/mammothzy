@@ -1,5 +1,5 @@
 
-const axios = require('axios');
+import axios from 'axios';
 
 // Get the endpoint from command line arguments
 const endpoint = process.argv[2] || '/api/ping';
