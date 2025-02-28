@@ -21,18 +21,29 @@ async function testVercelEndpoints() {
       console.log(`Status: ${response.status} ${response.statusText}`);
       
       try {
+        // Clone the response before reading it
+        const responseClone = response.clone();
+        
         // Try to parse as JSON first
-        const data = await response.json();
+        const data = await responseClone.json();
         console.log(`Response: ${JSON.stringify(data, null, 2).substring(0, 300)}...\n`);
       } catch (parseError) {
         // If not JSON, get as text
-        const text = await response.text();
-        console.log(`Response (text): ${text.substring(0, 300)}...\n`);
+        try {
+          const text = await response.text();
+          console.log(`Response (text): ${text.substring(0, 300)}...\n`);
+        } catch (textError) {
+          console.log(`Error reading response body: ${textError.message}\n`);
+        }
       }
+      
+      // Add delay between requests to avoid rate limiting
+      await new Promise(resolve => setTimeout(resolve, 1000));
     } catch (error) {
       console.error(`Error testing ${endpoint}: ${error.message}\n`);
     }
   }
 }
 
+// Execute the function
 testVercelEndpoints();

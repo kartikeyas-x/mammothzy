@@ -1,11 +1,9 @@
 
-// API Test Script
 import fetch from 'node-fetch';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Configuration 
 const API_BASE_URL = process.env.VERCEL_URL || 'https://mammothzy-git-main-kartikeyas-xs-projects.vercel.app';
 
 async function testAPI() {
@@ -30,7 +28,7 @@ async function testAPI() {
 
   try {
     // Test ping endpoint first (simple endpoint)
-    console.log(`🔍 Checking GET ${API_BASE_URL}/api/ping`);
+    console.log(`\n🔍 Checking GET ${API_BASE_URL}/api/ping`);
     try {
       const pingResponse = await fetch(`${API_BASE_URL}/api/ping`);
       console.log(`📊 Status: ${pingResponse.status} ${pingResponse.statusText}`);
@@ -44,52 +42,54 @@ async function testAPI() {
     } catch (pingError) {
       console.error(`❌ Ping request failed:`, pingError.message);
     }
-
-    // Test debug-db endpoint
-    console.log(`\n🔍 Checking GET ${API_BASE_URL}/api/debug-db`);
+    
+    // Add a small delay between requests
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Test healthcheck endpoint
+    console.log(`\n🔍 Checking GET ${API_BASE_URL}/api/healthcheck`);
     try {
-      const debugResponse = await fetch(`${API_BASE_URL}/api/debug-db`);
-      console.log(`📊 Status: ${debugResponse.status} ${debugResponse.statusText}`);
-      
-      if (debugResponse.ok) {
-        const debugData = await debugResponse.json();
-        console.log(`📄 Response:`, JSON.stringify(debugData, null, 2));
-      } else {
-        const text = await debugResponse.text();
-        console.log(`📄 Response:`, text);
+      const healthResponse = await fetch(`${API_BASE_URL}/api/healthcheck`);
+      console.log(`📊 Status: ${healthResponse.status} ${healthResponse.statusText}`);
+      try {
+        const healthData = await healthResponse.json();
+        console.log(`📄 Response:`, JSON.stringify(healthData, null, 2));
+      } catch (parseError) {
+        const text = await healthResponse.text();
+        console.log(`📄 Response (Text):`, text);
       }
-    } catch (debugError) {
-      console.error(`❌ Debug-db request failed:`, debugError.message);
+    } catch (healthError) {
+      console.error(`❌ Healthcheck request failed:`, healthError.message);
     }
-
-    // Only continue with advanced tests if basic endpoints work
+    
+    // Add a small delay between requests
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Test creating an activity
     console.log(`\n🔍 Testing POST ${API_BASE_URL}/api/activities`);
     try {
       const createResponse = await fetch(`${API_BASE_URL}/api/activities`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(testActivity),
+        body: JSON.stringify(testActivity)
       });
-
-      console.log(`📊 Status: ${createResponse.status} ${createResponse.statusText}`);
       
-      if (createResponse.ok) {
+      console.log(`📊 Status: ${createResponse.status} ${createResponse.statusText}`);
+      try {
         const createData = await createResponse.json();
         console.log(`📄 Response:`, JSON.stringify(createData, null, 2));
-      } else {
+      } catch (parseError) {
         const text = await createResponse.text();
-        console.log(`📄 Response:`, text);
+        console.log(`📄 Response (Text):`, text);
       }
     } catch (createError) {
       console.error(`❌ Create activity request failed:`, createError.message);
     }
-
   } catch (error) {
-    console.error('❌ API test failed:', error.message);
+    console.error('❌ Test suite failed:', error);
   }
 }
 
-// Run the tests
 testAPI();

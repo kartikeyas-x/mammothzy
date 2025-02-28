@@ -32,8 +32,8 @@ async function checkEndpoint() {
       }
     } catch (parseError) {
       console.error(`❌ Response parsing error:`, parseError.message);
-      const text = await response.text();
-      console.log(`📄 Raw Response:`, text.substring(0, 500) + (text.length > 500 ? '...' : ''));
+      // Can't read body again if it's already been read
+      console.log(`📄 Raw Response: [Body already consumed]`);
     }
   } catch (error) {
     console.error(`❌ Request failed:`, error.message);
