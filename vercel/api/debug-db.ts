@@ -1,36 +1,30 @@
 
-import type { Request, Response } from "express";
-import { neon } from "@neondatabase/serverless";
+import { Request, Response } from "express";
+import { db } from "../../db";
 
-export default async function handler(req: Request, res: Response) {
+// Simple debug endpoint to check database connectivity
+export default async function debugDbHandler(req: Request, res: Response) {
   try {
-    // Basic environment info
-    const info = {
+    // Try a simple query
+    const result = await db.query.sql`SELECT NOW()`;
+    
+    res.status(200).json({
+      status: "ok",
       timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV,
       database: {
-        url: process.env.DATABASE_URL ? 'configured' : 'missing',
-        connection: 'pending'
+        connected: true,
+        result: result
       }
-    };
-    
-    // Test database connection
-    if (process.env.DATABASE_URL) {
-      try {
-        const sql = neon(process.env.DATABASE_URL);
-        const result = await sql`SELECT 1 as connection_test`;
-        info.database.connection = 'successful';
-      } catch (dbError) {
-        info.database.connection = 'failed';
-        info.database.error = String(dbError);
-      }
-    }
-    
-    res.status(200).json(info);
+    });
   } catch (error) {
-    res.status(500).json({ 
-      error: 'Internal server error',
-      message: String(error)
+    console.error("Database error:", error);
+    res.status(500).json({
+      status: "error",
+      timestamp: new Date().toISOString(),
+      database: {
+        connected: false,
+        error: String(error)
+      }
     });
   }
 }

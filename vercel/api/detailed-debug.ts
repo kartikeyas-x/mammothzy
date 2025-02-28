@@ -1,62 +1,58 @@
 
-import { neon } from "@neondatabase/serverless";
+import { Request, Response } from "express";
+import { db } from "../../db";
 
-export default async function handler(req, res) {
-  // Prevent the response from being consumed multiple times
-  res.setHeader('Cache-Control', 'no-store');
-  
-  const debug = {
+export default async function detailedDebugHandler(req: Request, res: Response) {
+  // Create an object to hold all debug information
+  const debugInfo = {
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'unknown',
-    database: {
-      url: process.env.DATABASE_URL ? 'configured' : 'missing',
-      connection: 'pending'
+    vercel: {
+      isVercel: Boolean(process.env.VERCEL),
+      region: process.env.VERCEL_REGION,
+      env: process.env.VERCEL_ENV,
+      url: process.env.VERCEL_URL,
     },
     request: {
       method: req.method,
       url: req.url,
-      headers: req.headers
+      query: req.query,
+      headers: req.headers,
     },
-    vercel: {
-      region: process.env.VERCEL_REGION || 'unknown',
-      env: process.env.VERCEL ? 'vercel' : 'not-vercel',
-      url: process.env.VERCEL_URL || 'unknown'
-    },
-    nodejs: {
-      version: process.version,
-      memory: process.memoryUsage()
+    database: {
+      url: process.env.DATABASE_URL ? '[REDACTED]' : 'not defined',
+      connection: 'unknown',
+      testResult: null as any,
+      activitiesTable: {
+        exists: false,
+        error: null as any
+      }
     }
   };
 
   // Test database connection
   try {
-    const connectionString = process.env.DATABASE_URL;
-    if (connectionString) {
-      const sql = neon(connectionString);
-      const result = await sql`SELECT 1 as connection_test`;
-      debug.database.connection = 'successful';
-      debug.database.test_result = result;
-
-      // Check if activities table exists
-      try {
-        const tableResult = await sql`
-          SELECT EXISTS (
-            SELECT FROM information_schema.tables 
-            WHERE table_schema = 'public' 
-            AND table_name = 'activities'
-          );
-        `;
-        debug.database.activities_table_exists = tableResult[0]?.exists || false;
-      } catch (tableError) {
-        debug.database.activities_table_error = tableError.message;
-      }
-    } else {
-      debug.database.connection = 'no connection string provided';
+    const result = await db.query.sql`SELECT NOW()`;
+    debugInfo.database.connection = 'connected';
+    debugInfo.database.testResult = result;
+    
+    // Check if activities table exists
+    try {
+      const tableCheck = await db.query.sql`
+        SELECT EXISTS (
+          SELECT FROM information_schema.tables 
+          WHERE table_schema = 'public'
+          AND table_name = 'activities'
+        );
+      `;
+      debugInfo.database.activitiesTable.exists = tableCheck[0]?.exists || false;
+    } catch (tableError) {
+      debugInfo.database.activitiesTable.error = String(tableError);
     }
   } catch (dbError) {
-    debug.database.connection = 'failed';
-    debug.database.error = dbError.message;
+    debugInfo.database.connection = 'failed';
+    debugInfo.database.testResult = String(dbError);
   }
 
-  return res.status(200).json(debug);
+  res.status(200).json(debugInfo);
 }

@@ -1,10 +1,10 @@
 
 import express from "express";
 import { registerRoutes } from "../../server/routes";
-import { serveStatic, log } from "../../server/vite";
+import { serveStatic } from "../../server/vite";
 import serverless from "serverless-http";
 
-// Create an instance of your Express app
+// Create an instance of the Express app
 const app = express();
 
 // Middleware: parse JSON and URL-encoded data
@@ -17,26 +17,25 @@ app.use((req, res, next) => {
   res.on("finish", () => {
     const duration = Date.now() - start;
     if (req.path.startsWith("/api")) {
-      log(`${req.method} ${req.path} ${res.statusCode} in ${duration}ms`);
+      console.log(`${req.method} ${req.path} ${res.statusCode} in ${duration}ms`);
     }
   });
   next();
 });
 
-// Register your API routes
-registerRoutes(app);
+// Register your API routes and export the serverless handler
+const handler = serverless(app);
 
-// Serve static files (only in production; adjust if needed)
-if (process.env.NODE_ENV !== "development") {
-  serveStatic(app);
-}
+// Initialize routes
+registerRoutes(app).catch(err => {
+  console.error("Failed to register routes:", err);
+});
 
-// Export the serverless handler directly
-export default serverless(app);
-
-// Add API configuration
 export const config = {
   api: {
     bodyParser: false,
   }
 };
+
+// Export the serverless handler
+export default handler;
