@@ -1,23 +1,40 @@
+
 {
-    "builds": [
-      {
-        "src": "api/index.ts",
-        "use": "@vercel/node"
-      },
-      {
-        "src": "dist/public/**/*",
-        "use": "@vercel/static-build"
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/index.ts",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist/public"
       }
-    ],
-    "routes": [
-      {
-        "src": "/api/(.*)",
-        "dest": "api/index.ts"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "/dist/public/$1"
-      }
-    ]
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "api/index.ts"
+    },
+    {
+      "src": "/(assets|images|fonts)/.*",
+      "headers": { "cache-control": "public, max-age=31536000, immutable" },
+      "dest": "/dist/public/$0"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/dist/public/$1",
+      "continue": true
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/dist/public/index.html"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
   }
-  
+}
