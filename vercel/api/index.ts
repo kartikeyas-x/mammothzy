@@ -157,3 +157,78 @@ export default async (req, res) => {
     });
   }
 };
+import serverless from 'serverless-http';
+import express from 'express';
+import { registerRoutes } from '../../server/routes';
+import { serveStatic, log } from '../../server/vite';
+import { neon } from "@neondatabase/serverless";
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
+
+// Create an Express app
+const app = express();
+
+// Middleware for parsing JSON and URL-encoded data
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+// Logging middleware
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on("finish", () => {
+    const duration = Date.now() - start;
+    console.log(`${req.method} ${req.path} ${res.statusCode} in ${duration}ms`);
+  });
+  next();
+});
+
+// Debug endpoint to verify database connection
+app.get("/api/debug-db", async (req, res) => {
+  try {
+    const connectionString = process.env.DATABASE_URL;
+    if (!connectionString) {
+      return res.status(500).json({ error: "No DATABASE_URL environment variable found" });
+    }
+    
+    const sql = neon(connectionString);
+    
+    // Check database connection
+    const result = await sql`SELECT 1 as connection_test;`;
+    
+    // Check if activities table exists
+    const tableResult = await sql`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'activities'
+      );
+    `;
+    
+    return res.status(200).json({
+      connection: "successful",
+      connectionTest: result,
+      tableExists: tableResult[0]?.exists || false,
+      environment: process.env.NODE_ENV,
+      vercel: true
+    });
+  } catch (error) {
+    console.error("Database debug error:", error);
+    return res.status(500).json({
+      error: "Database connection error",
+      message: error.message,
+      stack: process.env.NODE_ENV === "production" ? "hidden" : error.stack
+    });
+  }
+});
+
+// Register API routes
+registerRoutes(app).then(() => {
+  console.log("API routes registered");
+}).catch(err => {
+  console.error("Failed to register API routes:", err);
+});
+
+// Export the serverless function
+export default serverless(app);
