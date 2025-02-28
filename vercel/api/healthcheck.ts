@@ -1,14 +1,10 @@
 
-import express from 'express';
 import { neon } from "@neondatabase/serverless";
 import dotenv from "dotenv";
 
 // Load environment variables
 dotenv.config();
 
-const app = express();
-
-// Handler for health check requests
 export default async function handler(req, res) {
   try {
     // Check database connection
@@ -31,7 +27,8 @@ export default async function handler(req, res) {
       environment: process.env.NODE_ENV || "development",
       vercel: process.env.VERCEL ? true : false,
       region: process.env.VERCEL_REGION || "unknown",
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      message: "API is operational"
     });
   } catch (error) {
     console.error("Healthcheck failed:", error);

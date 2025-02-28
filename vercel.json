@@ -3,11 +3,8 @@
   "version": 2,
   "builds": [
     {
-      "src": "vercel/api/index.ts",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["server/**", "shared/**", "*.ts", "db.ts", "drizzle.config.ts", "shared/schema.ts"]
-      }
+      "src": "vercel/api/*.ts",
+      "use": "@vercel/node"
     },
     {
       "src": "package.json",
@@ -20,7 +17,11 @@
   "routes": [
     {
       "src": "/api/healthcheck",
-      "dest": "vercel/api/index.ts"
+      "dest": "vercel/api/healthcheck.ts"
+    },
+    {
+      "src": "/api/ping",
+      "dest": "vercel/api/ping.ts"
     },
     {
       "src": "/api/(.*)",
