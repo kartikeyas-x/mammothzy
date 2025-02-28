@@ -1,0 +1,97 @@
+3:14:33 PM: Netlify Build                                                 
+3:14:33 PM: ────────────────────────────────────────────────────────────────
+3:14:33 PM: ​
+3:14:33 PM: ❯ Version
+3:14:33 PM:   @netlify/build 29.59.2
+3:14:33 PM: ​
+3:14:33 PM: ❯ Flags
+3:14:33 PM:   accountId: 651f067a92b7d402d987750b
+3:14:33 PM:   baseRelDir: true
+3:14:33 PM:   buildId: 67c1854d2a36550008d04f92
+3:14:33 PM:   deployId: 67c1854d2a36550008d04f94
+3:14:33 PM: ​
+3:14:33 PM: ❯ Current directory
+3:14:33 PM:   /opt/build/repo
+3:14:33 PM: ​
+3:14:33 PM: ❯ Config file
+3:14:33 PM:   /opt/build/repo/netlify.toml
+3:14:33 PM: ​
+3:14:33 PM: ❯ Context
+3:14:33 PM:   production
+3:14:33 PM: ​
+3:14:33 PM: build.command from netlify.toml                               
+3:14:33 PM: ────────────────────────────────────────────────────────────────
+3:14:33 PM: ​
+3:14:33 PM: $ npm run build
+3:14:33 PM: > rest-express@1.0.0 build
+3:14:33 PM: > vite build && npm run build:functions
+3:14:34 PM: vite v5.4.14 building for production...
+3:14:34 PM: transforming...
+3:14:37 PM: ✓ 2165 modules transformed.
+3:14:37 PM: rendering chunks...
+3:14:37 PM: computing gzip size...
+3:14:37 PM: ../dist/public/index.html                   1.60 kB │ gzip:   0.63 kB
+3:14:37 PM: ../dist/public/assets/index-CECowN2h.css   58.00 kB │ gzip:  10.14 kB
+3:14:37 PM: ../dist/public/assets/index-DthaFJA1.js   562.25 kB │ gzip: 176.57 kB
+3:14:37 PM: 
+3:14:37 PM: (!) Some chunks are larger than 500 kB after minification. Consider:
+3:14:37 PM: - Using dynamic import() to code-split the application
+3:14:37 PM: - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+3:14:37 PM: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+3:14:37 PM: ✓ built in 3.36s
+3:14:37 PM: > rest-express@1.0.0 build:functions
+3:14:37 PM: > mkdir -p netlify/functions && esbuild server/index.ts netlify/functions/api.js --platform=node --packages=external --bundle --format=esm --outdir=dist/functions
+3:14:37 PM:   dist/functions/server/index.js           13.3kb
+3:14:37 PM:   dist/functions/netlify/functions/api.js   9.8kb
+3:14:37 PM: ⚡ Done in 5ms
+3:14:37 PM: ​
+3:14:37 PM: (build.command completed in 4.1s)
+3:14:37 PM: ​
+3:14:37 PM: Functions bundling                                            
+3:14:37 PM: ────────────────────────────────────────────────────────────────
+3:14:37 PM: ​
+3:14:37 PM: Packaging Functions from dist/functions directory:
+3:14:37 PM:  - server/index.js
+3:14:37 PM: ​
+3:14:44 PM: ✘ [ERROR] Top-level await is currently not supported with the "cjs" output format
+3:14:44 PM:     dist/functions/server/index.js:271:6:
+3:14:44 PM:       271 │       await import("@replit/vite-plugin-cartographer").then(
+3:14:44 PM:           ╵       ~~~~~
+3:14:44 PM: ​
+3:14:44 PM: Bundling of function "server" failed                          
+3:14:44 PM: ────────────────────────────────────────────────────────────────
+3:14:44 PM: ​
+3:14:44 PM:   Error message
+3:14:44 PM:   Build failed with 1 error:
+3:14:44 PM:   dist/functions/server/index.js:271:6: ERROR: Top-level await is currently not supported with the "cjs" output format
+3:14:44 PM: ​
+3:14:44 PM:   Error location
+3:14:44 PM:   While bundling function "server"
+3:14:44 PM: ​
+3:14:44 PM:   Resolved config
+3:14:44 PM:   build:
+3:14:44 PM:     command: npm run build
+3:14:44 PM:     commandOrigin: config
+3:14:44 PM:     environment:
+3:14:44 PM:       - DATABASE_URL
+3:14:44 PM:     publish: /opt/build/repo/dist/public
+3:14:44 PM:     publishOrigin: config
+3:14:44 PM:   functionsDirectory: /opt/build/repo/dist/functions
+3:14:44 PM:   headers:
+3:14:45 PM: Failed during stage 'building site': Build script returned non-zero exit code: 2 (https://ntl.fyi/exit-code-2)
+3:14:45 PM:     - for: /*
+      values:
+        Cache-Control: public, max-age=0, must-revalidate
+  headersOrigin: config
+  redirects:
+    - force: true
+      from: /api/*
+      status: 200
+      to: /.netlify/functions/api/:splat
+    - from: /*
+      status: 200
+      to: /index.html
+  redirectsOrigin: config
+3:14:45 PM: Build failed due to a user error: Build script returned non-zero exit code: 2
+3:14:45 PM: Failing build: Failed to build site
+3:14:45 PM: Finished processing build request in 53.972s
