@@ -1,21 +1,27 @@
 
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { drizzle } from "drizzle-orm/neon-http";
+import { neon } from "@neondatabase/serverless";
 import * as schema from "./shared/schema";
 
-// Database connection string
-const connectionString = process.env.DATABASE_URL || "";
+// Create a database connection function
+const createDBConnection = () => {
+  const connectionString = process.env.DATABASE_URL;
+  
+  if (!connectionString) {
+    throw new Error("DATABASE_URL environment variable is not set");
+  }
 
-// Simple check to ensure we have a connection string
-if (!connectionString) {
-  console.error("DATABASE_URL environment variable is not set");
-}
+  // Configure Neon database with proper pooling for serverless
+  const sql = neon(connectionString, {
+    pooling: {
+      enabled: true,
+      max: 5,            // Maximum 5 connections
+      idleTimeoutMillis: 30000  // Close idle connections after 30 seconds
+    }
+  });
 
-// Initialize postgres client
-const client = postgres(connectionString, {
-  max: 20,
-  prepare: false,
-});
+  return drizzle(sql, { schema });
+};
 
-// Initialize drizzle with the client and schema
-export const db = drizzle(client, { schema });
+// Export the database instance
+export const db = createDBConnection();
