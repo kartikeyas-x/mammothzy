@@ -1,10 +1,14 @@
 
-import { NextApiRequest, NextApiResponse } from "next";
+import { neon } from "@neondatabase/serverless";
+import dotenv from "dotenv";
 
-// Simple debugging endpoint that doesn't depend on database connections
-// This is useful for isolating issues
-export default async function debug(req: NextApiRequest, res: NextApiResponse) {
+// Load environment variables
+dotenv.config();
+
+// Handler for debugging requests
+export default async function handler(req, res) {
   try {
+    // Basic environment info
     const info = {
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV,
@@ -20,10 +24,43 @@ export default async function debug(req: NextApiRequest, res: NextApiResponse) {
         VERCEL: process.env.VERCEL,
         VERCEL_REGION: process.env.VERCEL_REGION,
         // Don't include DATABASE_URL or other secrets
+        DATABASE_URL_EXISTS: Boolean(process.env.DATABASE_URL)
       },
       nodeVersion: process.version,
       memoryUsage: process.memoryUsage(),
     };
+
+    // Try to connect to database if available
+    if (process.env.DATABASE_URL) {
+      try {
+        const sql = neon(process.env.DATABASE_URL);
+        const dbTest = await sql`SELECT 1 as connection_test;`;
+        
+        info.database = {
+          connected: true,
+          test: dbTest
+        };
+        
+        // Check for tables
+        const tablesCheck = await sql`
+          SELECT table_name 
+          FROM information_schema.tables 
+          WHERE table_schema = 'public';
+        `;
+        
+        info.database.tables = tablesCheck.map(row => row.table_name);
+      } catch (dbError) {
+        info.database = {
+          connected: false,
+          error: dbError.message
+        };
+      }
+    } else {
+      info.database = {
+        connected: false,
+        error: "No DATABASE_URL provided"
+      };
+    }
 
     return res.status(200).json(info);
   } catch (error) {
