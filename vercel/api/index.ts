@@ -1,28 +1,39 @@
 
 import express from "express";
+import { registerRoutes } from "../../server/routes";
+import { serveStatic, log } from "../../server/vite";
 import serverless from "serverless-http";
 
-// Create Express app
+// Create an instance of your Express app
 const app = express();
 
-// Middleware
+// Middleware: parse JSON and URL-encoded data
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Basic logging middleware
+// Example middleware for logging
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.path}`);
+  const start = Date.now();
+  res.on("finish", () => {
+    const duration = Date.now() - start;
+    if (req.path.startsWith("/api")) {
+      log(`${req.method} ${req.path} ${res.statusCode} in ${duration}ms`);
+    }
+  });
   next();
 });
 
-// Basic routes for testing
-app.get('/api', (req, res) => {
-  res.status(200).json({
-    status: "ok",
-    message: "API is working",
-    timestamp: new Date().toISOString()
-  });
-});
+// Register your API routes and create serverless handler
+const createHandler = async () => {
+  await registerRoutes(app);
+  return serverless(app);
+};
 
-// Export serverless handler
-export default serverless(app);
+export const config = {
+  api: {
+    bodyParser: false,
+  }
+};
+
+// Export the serverless handler
+export default createHandler();

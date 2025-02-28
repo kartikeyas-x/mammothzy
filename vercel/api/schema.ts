@@ -1,27 +1,22 @@
-
 import { z } from "zod";
 
 // Define the schema for inserting a new activity
 export const insertActivitySchema = z.object({
   title: z.string().min(1).max(100),
   description: z.string().optional(),
-  type: z.enum(["work", "personal", "hobby", "other"]),
-  status: z.enum(["todo", "in_progress", "done"]).default("todo"),
-  due_date: z.string().optional(), // ISO date string format
-  priority: z.enum(["low", "medium", "high"]).default("medium"),
-  created_by: z.string().optional(),
-  assignee: z.string().optional(),
-  tags: z.array(z.string()).optional(),
-  metadata: z.record(z.any()).optional(),
+  type: z.enum(["Work", "Personal", "Study", "Exercise", "Other"]),
+  duration: z.number().int().positive(),
+  date: z.string().datetime(),
+  completed: z.boolean().default(false),
 });
 
-// Define the schema for a complete activity, including system-generated fields
+// Define the schema for an activity with an ID
 export const activitySchema = insertActivitySchema.extend({
-  id: z.string(),
-  created_at: z.string(), // ISO date string
-  updated_at: z.string(), // ISO date string
+  id: z.number().int().positive(),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
 });
 
-// Define TypeScript types based on the schemas
+// TypeScript types derived from the schemas
 export type InsertActivity = z.infer<typeof insertActivitySchema>;
 export type Activity = z.infer<typeof activitySchema>;
