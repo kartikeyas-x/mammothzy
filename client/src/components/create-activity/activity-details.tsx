@@ -615,7 +615,7 @@ export default function ActivityDetails({ form, onNext }: ActivityDetailsProps) 
 
         <FormField
           control={form.control}
-          name="activityType"
+          name="activity_type" // Changed from activityType to match backend schema
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-gray-700">Please select the activity type <span className="text-red-500">*</span></FormLabel>

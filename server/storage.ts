@@ -43,7 +43,16 @@ class Storage {
 
   async createActivity(activity: InsertActivity): Promise<Activity> {
     try {
-      const result = await db.insert(activities).values(activity).returning();
+      // Set default values for required fields if they're missing
+      const activityWithDefaults = {
+        ...activity,
+        activity_type: activity.activity_type || "Indoor", // Default to Indoor if not specified
+        location_type: activity.location_type || "In-person", // Default to In-person if not specified
+      };
+      
+      console.log("Creating activity with defaults:", JSON.stringify(activityWithDefaults));
+      
+      const result = await db.insert(activities).values(activityWithDefaults).returning();
       return result[0];
     } catch (error) {
       console.error("Failed to create activity:", error);
