@@ -23,17 +23,20 @@ app.use((req, res, next) => {
   next();
 });
 
-// Register your API routes and create serverless handler
-const createHandler = async () => {
-  await registerRoutes(app);
-  return serverless(app);
-};
+// Register your API routes
+registerRoutes(app);
 
+// Serve static files (only in production; adjust if needed)
+if (process.env.NODE_ENV !== "development") {
+  serveStatic(app);
+}
+
+// Export the serverless handler directly
+export default serverless(app);
+
+// Add API configuration
 export const config = {
   api: {
     bodyParser: false,
   }
 };
-
-// Export the serverless handler
-export default createHandler();
