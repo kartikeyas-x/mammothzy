@@ -1,57 +1,70 @@
 
-// Netlify serverless function for API routes
 import express from "express";
-import { registerRoutes } from "../../server/routes.js";
 import serverless from "serverless-http";
-import path from "path";
+import { registerRoutes } from "../../server/routes.js";
 
-// Create Express app
 const app = express();
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Logging middleware
+// CORS headers
 app.use((req, res, next) => {
-  const start = Date.now();
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    console.log(`${req.method} ${req.path} ${res.statusCode} in ${duration}ms`);
-  });
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+  
   next();
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error("API Error:", err);
-  res.status(500).json({
-    message: "Internal Server Error",
-    error: process.env.NODE_ENV === "development" ? err.message : undefined
-  });
+// Logging middleware
+app.use((req, res, next) => {
+  console.log(`Netlify Function: ${req.method} ${req.path}`);
+  next();
 });
 
-// Create handler function
-const handler = async (event, context) => {
-  // Register API routes
-  await registerRoutes(app);
-  
-  // Handle preflight OPTIONS requests
+// Initialize routes and setup handler
+let handler;
+
+// This pattern avoids top-level await which causes issues with the ESM format
+export const setupHandler = async () => {
+  if (!handler) {
+    await registerRoutes(app);
+    handler = serverless(app);
+  }
+  return handler;
+};
+
+export const handler = async (event, context) => {
+  // For preflight OPTIONS requests
   if (event.httpMethod === "OPTIONS") {
     return {
-      statusCode: 204,
+      statusCode: 200,
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "Content-Type, Authorization",
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS"
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
       },
-      body: ""
+      body: "",
     };
   }
-  
-  // Convert to serverless function
-  const serverlessHandler = serverless(app);
-  return serverlessHandler(event, context);
-};
 
-export { handler };
+  // Setup handler (first request will initialize)
+  const serverlessHandler = await setupHandler();
+  
+  // Process the request
+  try {
+    return await serverlessHandler(event, context);
+  } catch (error) {
+    console.error("Error in Netlify function:", error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: "Internal Server Error" }),
+    };
+  }
+};

@@ -18,8 +18,10 @@
   to = "/index.html"
   status = 200
 
-# Handle 404 errors for missing files like favicon.ico
+# Headers for caching and security
 [[headers]]
   for = "/*"
     [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
