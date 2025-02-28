@@ -2,17 +2,24 @@
 # Netlify configuration file
 [build]
   command = "npm run build"
-  publish = "dist"
-  functions = "netlify/functions"
+  publish = "dist/public"
+  functions = "dist/functions"
 
-# Redirect all API requests to Netlify functions
+# Redirect API requests to Netlify functions
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api/:splat"
   status = 200
+  force = true
 
 # Redirect everything else to index.html (for SPA routing)
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Handle 404 errors for missing files like favicon.ico
+[[headers]]
+  for = "/*"
+    [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
