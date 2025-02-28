@@ -1,41 +1,37 @@
 
 import express from "express";
-import { registerRoutes } from "../../server/routes";
-import { serveStatic } from "../../server/vite";
 import serverless from "serverless-http";
+import { registerRoutes } from "../../server/routes";
 
-// Create an instance of the Express app
+// Create Express app
 const app = express();
 
-// Middleware: parse JSON and URL-encoded data
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Example middleware for logging
+// Basic logging middleware
 app.use((req, res, next) => {
-  const start = Date.now();
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (req.path.startsWith("/api")) {
-      console.log(`${req.method} ${req.path} ${res.statusCode} in ${duration}ms`);
-    }
-  });
+  console.log(`${req.method} ${req.path}`);
   next();
 });
 
-// Register your API routes and export the serverless handler
-const handler = serverless(app);
+// Register API routes
+try {
+  registerRoutes(app);
+} catch (error) {
+  console.error("Error registering routes:", error);
+  app.use('/api', (req, res) => {
+    res.status(500).json({ error: "Server configuration error" });
+  });
+}
 
-// Initialize routes
-registerRoutes(app).catch(err => {
-  console.error("Failed to register routes:", err);
-});
+// Export serverless handler
+export default serverless(app);
 
+// Export Vercel config
 export const config = {
   api: {
-    bodyParser: false,
+    bodyParser: false
   }
 };
-
-// Export the serverless handler
-export default handler;
