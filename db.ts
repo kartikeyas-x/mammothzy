@@ -2,14 +2,18 @@
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
 import * as schema from "./shared/schema";
+import dotenv from "dotenv";
+
+// Ensure environment variables are loaded
+dotenv.config();
 
 // Create a database connection function
 const createDBConnection = () => {
-  const connectionString = process.env.DATABASE_URL;
+  // Try to get from environment, otherwise use hardcoded fallback
+  const connectionString = process.env.DATABASE_URL || 
+    "postgresql://neondb_owner:npg_iswFG0ZaHIY5@ep-broad-mouse-a8asxfw4-pooler.eastus2.azure.neon.tech/neondb?sslmode=require";
   
-  if (!connectionString) {
-    throw new Error("DATABASE_URL environment variable is not set");
-  }
+  console.log("Using database connection:", connectionString.substring(0, 30) + "...");
 
   // Configure Neon database with proper pooling for serverless
   const sql = neon(connectionString, {

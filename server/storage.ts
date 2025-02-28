@@ -1,21 +1,54 @@
-import { drizzle } from "drizzle-orm/neon-http";
-import { neon } from "@neondatabase/serverless";
-import { activities, type InsertActivity } from "@shared/schema";
-import dotenv from 'dotenv';
 
-// Ensure environment variables are loaded
-dotenv.config();
+import { db } from "../db";
+import { activities } from "@shared/schema";
+import { eq } from "drizzle-orm";
+import type { InsertActivity } from "@shared/schema";
 
-// Create a pool connection for better serverless performance
-const createDBConnection = () => {
-  if (!process.env.DATABASE_URL) {
-    console.error("DATABASE_URL environment variable is not set");
-    throw new Error("DATABASE_URL environment variable is not set");
+class Storage {
+  async healthCheck() {
+    try {
+      // Simple query to check if database is responsive
+      await db.select({ count: activities.id }).limit(1);
+      return { status: "healthy", timestamp: new Date().toISOString() };
+    } catch (error) {
+      console.error("Database health check failed:", error);
+      return { 
+        status: "unhealthy", 
+        error: error.message,
+        timestamp: new Date().toISOString()
+      };
+    }
   }
-  console.log("Database URL found, attempting connection...");
-  const sql = neon(process.env.DATABASE_URL);
-  const db = drizzle(sql);
-  return db;
-};
 
-export const db = createDBConnection();
+  async createActivity(activity: InsertActivity) {
+    try {
+      // Insert and return the created activity
+      const result = await db.insert(activities).values(activity).returning();
+      return result[0];
+    } catch (error) {
+      console.error("Failed to create activity:", error);
+      throw new Error(`Database error: ${error.message}`);
+    }
+  }
+
+  async getAllActivities() {
+    try {
+      return await db.select().from(activities);
+    } catch (error) {
+      console.error("Failed to get all activities:", error);
+      throw new Error(`Database error: ${error.message}`);
+    }
+  }
+
+  async getActivity(id: number) {
+    try {
+      const result = await db.select().from(activities).where(eq(activities.id, id)).limit(1);
+      return result[0] || null;
+    } catch (error) {
+      console.error(`Failed to get activity with id ${id}:`, error);
+      throw new Error(`Database error: ${error.message}`);
+    }
+  }
+}
+
+export const storage = new Storage();
