@@ -29,66 +29,61 @@ async function testAPI() {
   };
 
   try {
-    // Test healthcheck endpoint
-    console.log(`🔍 Checking GET ${API_BASE_URL}/api/healthcheck`);
-    const healthResponse = await fetch(`${API_BASE_URL}/api/healthcheck`);
-    console.log(`📊 Status: ${healthResponse.status} ${healthResponse.statusText}`);
-
-    if (healthResponse.ok) {
-      const healthData = await healthResponse.json();
-      console.log(`📄 Response:`, JSON.stringify(healthData, null, 2));
-    } else {
-      const text = await healthResponse.text();
-      console.log(`📄 Response:`, text);
-    }
-
-    // Test activities POST endpoint
-    console.log(`\n🔍 Testing POST ${API_BASE_URL}/api/activities`);
-    const createResponse = await fetch(`${API_BASE_URL}/api/activities`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(testActivity),
-    });
-
-    console.log(`📊 Status: ${createResponse.status} ${createResponse.statusText}`);
-
-    if (createResponse.ok) {
-      const createData = await createResponse.json();
-      console.log(`📄 Response:`, JSON.stringify(createData, null, 2));
-
-      // Test GET single activity if creation was successful
-      if (createData.id) {
-        console.log(`\n🔍 Testing GET ${API_BASE_URL}/api/activities/${createData.id}`);
-        const getResponse = await fetch(`${API_BASE_URL}/api/activities/${createData.id}`);
-        console.log(`📊 Status: ${getResponse.status} ${getResponse.statusText}`);
-
-        if (getResponse.ok) {
-          const getData = await getResponse.json();
-          console.log(`📄 Response:`, JSON.stringify(getData, null, 2));
-        } else {
-          const text = await getResponse.text();
-          console.log(`📄 Response:`, text);
-        }
+    // Test ping endpoint first (simple endpoint)
+    console.log(`🔍 Checking GET ${API_BASE_URL}/api/ping`);
+    try {
+      const pingResponse = await fetch(`${API_BASE_URL}/api/ping`);
+      console.log(`📊 Status: ${pingResponse.status} ${pingResponse.statusText}`);
+      if (pingResponse.ok) {
+        const pingData = await pingResponse.json();
+        console.log(`📄 Response:`, JSON.stringify(pingData, null, 2));
+      } else {
+        const text = await pingResponse.text();
+        console.log(`📄 Response:`, text);
       }
-    } else {
-      const text = await createResponse.text();
-      console.log(`📄 Response:`, text);
+    } catch (pingError) {
+      console.error(`❌ Ping request failed:`, pingError.message);
     }
 
-    // Test GET all activities
-    console.log(`\n🔍 Testing GET ${API_BASE_URL}/api/activities`);
-    const getAllResponse = await fetch(`${API_BASE_URL}/api/activities`);
-    console.log(`📊 Status: ${getAllResponse.status} ${getAllResponse.statusText}`);
+    // Test debug-db endpoint
+    console.log(`\n🔍 Checking GET ${API_BASE_URL}/api/debug-db`);
+    try {
+      const debugResponse = await fetch(`${API_BASE_URL}/api/debug-db`);
+      console.log(`📊 Status: ${debugResponse.status} ${debugResponse.statusText}`);
+      
+      if (debugResponse.ok) {
+        const debugData = await debugResponse.json();
+        console.log(`📄 Response:`, JSON.stringify(debugData, null, 2));
+      } else {
+        const text = await debugResponse.text();
+        console.log(`📄 Response:`, text);
+      }
+    } catch (debugError) {
+      console.error(`❌ Debug-db request failed:`, debugError.message);
+    }
 
-    if (getAllResponse.ok) {
-      const getAllData = await getAllResponse.json();
-      console.log(`📄 Response: Found ${getAllData.length} activities`);
-      // Don't print all activities to avoid console clutter
-    } else {
-      const text = await getAllResponse.text();
-      console.log(`📄 Response:`, text);
+    // Only continue with advanced tests if basic endpoints work
+    console.log(`\n🔍 Testing POST ${API_BASE_URL}/api/activities`);
+    try {
+      const createResponse = await fetch(`${API_BASE_URL}/api/activities`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(testActivity),
+      });
+
+      console.log(`📊 Status: ${createResponse.status} ${createResponse.statusText}`);
+      
+      if (createResponse.ok) {
+        const createData = await createResponse.json();
+        console.log(`📄 Response:`, JSON.stringify(createData, null, 2));
+      } else {
+        const text = await createResponse.text();
+        console.log(`📄 Response:`, text);
+      }
+    } catch (createError) {
+      console.error(`❌ Create activity request failed:`, createError.message);
     }
 
   } catch (error) {

@@ -8,7 +8,7 @@ dotenv.config();
 async function checkEndpoint() {
   // Get the endpoint from command line args or use default
   const args = process.argv.slice(2);
-  const endpoint = args[0] || '/api/healthcheck';
+  const endpoint = args[0] || '/api/ping';
   
   // Get base URL from env or use default
   const API_BASE_URL = process.env.VERCEL_URL || 'https://mammothzy-git-main-kartikeyas-xs-projects.vercel.app';
@@ -21,10 +21,19 @@ async function checkEndpoint() {
     console.log(`📊 Status: ${response.status} ${response.statusText}`);
     
     try {
-      const data = await response.text();
-      console.log(`📄 Response:`, data.substring(0, 500) + (data.length > 500 ? '...' : ''));
-    } catch (e) {
-      console.error(`❌ Response error:`, e.message);
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        const data = await response.json();
+        console.log(`📄 Response (JSON):`, JSON.stringify(data, null, 2).substring(0, 500) + 
+          (JSON.stringify(data, null, 2).length > 500 ? '...' : ''));
+      } else {
+        const text = await response.text();
+        console.log(`📄 Response (Text):`, text.substring(0, 500) + (text.length > 500 ? '...' : ''));
+      }
+    } catch (parseError) {
+      console.error(`❌ Response parsing error:`, parseError.message);
+      const text = await response.text();
+      console.log(`📄 Raw Response:`, text.substring(0, 500) + (text.length > 500 ? '...' : ''));
     }
   } catch (error) {
     console.error(`❌ Request failed:`, error.message);
