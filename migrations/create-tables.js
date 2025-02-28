@@ -3,7 +3,7 @@
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
 import dotenv from "dotenv";
-import { activities } from "./shared/schema.js";
+import { activities } from "../shared/schema.js";
 import { sql } from "drizzle-orm";
 
 // Load environment variables
