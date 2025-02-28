@@ -6,7 +6,7 @@
       "src": "vercel/api/index.ts",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": ["server/**", "shared/**", "*.ts", "db.ts", "drizzle.config.ts"]
+        "includeFiles": ["server/**", "shared/**", "*.ts", "db.ts", "drizzle.config.ts", "shared/schema.ts"]
       }
     },
     {

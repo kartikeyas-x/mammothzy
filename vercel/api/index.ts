@@ -1,7 +1,9 @@
+
 import express, { Request, Response, NextFunction } from "express";
 import { registerRoutes } from "../../server/routes"; 
 import { serveStatic, log } from "../../server/vite";  
 import serverless from "serverless-http";
+import * as schema from "../../shared/schema";  // Explicitly import from the correct path
 import dotenv from 'dotenv';
 
 // Load environment variables
