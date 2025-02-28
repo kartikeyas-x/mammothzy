@@ -1,0 +1,75 @@
+[14:02:29.207] Running build in Washington, D.C., USA (East) – iad1
+[14:02:29.725] Cloning github.com/kartikeyas-x/mammothzy (Branch: main, Commit: d7ea9c5)
+[14:02:29.965] Cloning completed: 240.000ms
+[14:02:32.548] Restored build cache from previous deployment (5sYWjxm8Y4FmC1DdConUaFujeSvC)
+[14:02:32.627] Running "vercel build"
+[14:02:32.988] Vercel CLI 41.2.2
+[14:02:33.111] WARN! Due to `builds` existing in your configuration file, the Build and Development Settings defined in your Project Settings will not apply. Learn More: https://vercel.link/unused-build-settings
+[14:02:33.679] Installing dependencies...
+[14:02:35.254] 
+[14:02:35.255] up to date in 1s
+[14:02:35.256] 
+[14:02:35.256] 74 packages are looking for funding
+[14:02:35.256]   run `npm fund` for details
+[14:02:35.290] Running "npm run build"
+[14:02:35.399] 
+[14:02:35.399] > rest-express@1.0.0 build
+[14:02:35.400] > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+[14:02:35.400] 
+[14:02:35.767] [36mvite v5.4.14 [32mbuilding for production...[36m[39m
+[14:02:35.818] transforming...
+[14:02:41.465] [32m✓[39m 2165 modules transformed.
+[14:02:41.908] rendering chunks...
+[14:02:41.918] computing gzip size...
+[14:02:41.938] [2m../dist/public/[22m[32mindex.html                 [39m[1m[2m  1.60 kB[22m[1m[22m[2m │ gzip:   0.63 kB[22m
+[14:02:41.938] [2m../dist/public/[22m[2massets/[22m[35mindex-CECowN2h.css  [39m[1m[2m 58.00 kB[22m[1m[22m[2m │ gzip:  10.14 kB[22m
+[14:02:41.939] [2m../dist/public/[22m[2massets/[22m[36mindex-DthaFJA1.js   [39m[1m[33m562.25 kB[39m[22m[2m │ gzip: 176.57 kB[22m
+[14:02:41.939] [33m
+[14:02:41.939] (!) Some chunks are larger than 500 kB after minification. Consider:
+[14:02:41.940] - Using dynamic import() to code-split the application
+[14:02:41.940] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[14:02:41.940] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[14:02:41.940] [32m✓ built in 6.15s[39m
+[14:02:41.971] 
+[14:02:41.972]   dist/index.js  13.3kb
+[14:02:41.972] 
+[14:02:41.972] ⚡ Done in 5ms
+[14:02:42.229] Using TypeScript 5.6.3 (local user-provided)
+[14:02:46.004] vercel/api/debug-db.ts(1,49): error TS2307: Cannot find module 'next' or its corresponding type declarations.
+[14:02:46.005] 
+[14:02:46.048] Using TypeScript 5.6.3 (local user-provided)
+[14:02:46.358] vercel/api/debug.ts(9,39): error TS7006: Parameter 'req' implicitly has an 'any' type.
+[14:02:46.360] vercel/api/debug.ts(9,44): error TS7006: Parameter 'res' implicitly has an 'any' type.
+[14:02:46.360] vercel/api/debug.ts(50,14): error TS2339: Property 'database' does not exist on type '{ timestamp: string; environment: string | undefined; vercel: boolean; vercelRegion: string; method: any; url: any; headers: any; query: any; env: { NODE_ENV: string | undefined; VERCEL: string | undefined; VERCEL_REGION: string | undefined; DATABASE_URL_EXISTS: boolean; }; nodeVersion: string; memoryUsage: MemoryUs...'.
+[14:02:46.361] vercel/api/debug.ts(56,14): error TS2339: Property 'database' does not exist on type '{ timestamp: string; environment: string | undefined; vercel: boolean; vercelRegion: string; method: any; url: any; headers: any; query: any; env: { NODE_ENV: string | undefined; VERCEL: string | undefined; VERCEL_REGION: string | undefined; DATABASE_URL_EXISTS: boolean; }; nodeVersion: string; memoryUsage: MemoryUs...'.
+[14:02:46.361] vercel/api/debug.ts(58,18): error TS18046: 'dbError' is of type 'unknown'.
+[14:02:46.361] vercel/api/debug.ts(62,12): error TS2339: Property 'database' does not exist on type '{ timestamp: string; environment: string | undefined; vercel: boolean; vercelRegion: string; method: any; url: any; headers: any; query: any; env: { NODE_ENV: string | undefined; VERCEL: string | undefined; VERCEL_REGION: string | undefined; DATABASE_URL_EXISTS: boolean; }; nodeVersion: string; memoryUsage: MemoryUs...'.
+[14:02:46.361] vercel/api/debug.ts(73,16): error TS18046: 'error' is of type 'unknown'.
+[14:02:46.361] vercel/api/debug.ts(74,65): error TS18046: 'error' is of type 'unknown'.
+[14:02:46.362] 
+[14:02:46.967] Using TypeScript 5.6.3 (local user-provided)
+[14:02:47.246] vercel/api/detailed-debug.ts(4,39): error TS7006: Parameter 'req' implicitly has an 'any' type.
+[14:02:47.247] vercel/api/detailed-debug.ts(4,44): error TS7006: Parameter 'res' implicitly has an 'any' type.
+[14:02:47.247] vercel/api/detailed-debug.ts(38,22): error TS2339: Property 'test_result' does not exist on type '{ url: string; connection: string; }'.
+[14:02:47.248] vercel/api/detailed-debug.ts(49,24): error TS2339: Property 'activities_table_exists' does not exist on type '{ url: string; connection: string; }'.
+[14:02:47.248] vercel/api/detailed-debug.ts(51,24): error TS2339: Property 'activities_table_error' does not exist on type '{ url: string; connection: string; }'.
+[14:02:47.248] vercel/api/detailed-debug.ts(51,49): error TS18046: 'tableError' is of type 'unknown'.
+[14:02:47.248] vercel/api/detailed-debug.ts(58,20): error TS2339: Property 'error' does not exist on type '{ url: string; connection: string; }'.
+[14:02:47.248] vercel/api/detailed-debug.ts(58,28): error TS18046: 'dbError' is of type 'unknown'.
+[14:02:47.249] 
+[14:02:47.586] Using TypeScript 5.6.3 (local user-provided)
+[14:02:47.800] vercel/api/healthcheck.ts(1,49): error TS2307: Cannot find module 'next' or its corresponding type declarations.
+[14:02:47.800] 
+[14:02:47.834] Using TypeScript 5.6.3 (local user-provided)
+[14:02:49.017] vercel/api/index.ts(1,49): error TS2307: Cannot find module 'next' or its corresponding type declarations.
+[14:02:49.017] 
+[14:02:49.326] Using TypeScript 5.6.3 (local user-provided)
+[14:02:49.544] vercel/api/ping.ts(2,49): error TS2307: Cannot find module 'next' or its corresponding type declarations.
+[14:02:49.545] 
+[14:02:49.657] Using TypeScript 5.6.3 (local user-provided)
+[14:02:50.057] Build Completed in /vercel/output [16s]
+[14:02:50.208] Deploying outputs...
+[14:02:54.149] 
+[14:02:54.468] Deployment completed
+[14:03:37.810] Uploading build cache [62.04 MB]...
+[14:03:39.109] Build cache uploaded: 1.299s
