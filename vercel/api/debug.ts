@@ -29,46 +29,49 @@ export default async function handler(req, res) {
       nodeVersion: process.version,
       memoryUsage: process.memoryUsage(),
     };
-
-    // Try to connect to database if available
+    
+    // Database connection test
     if (process.env.DATABASE_URL) {
       try {
         const sql = neon(process.env.DATABASE_URL);
-        const dbTest = await sql`SELECT 1 as connection_test;`;
         
-        info.database = {
-          connected: true,
-          test: dbTest
-        };
+        // Check database connection
+        const result = await sql`SELECT 1 as connection_test;`;
         
-        // Check for tables
-        const tablesCheck = await sql`
-          SELECT table_name 
-          FROM information_schema.tables 
-          WHERE table_schema = 'public';
+        // Check if activities table exists
+        const tableResult = await sql`
+          SELECT EXISTS (
+            SELECT FROM information_schema.tables 
+            WHERE table_schema = 'public' 
+            AND table_name = 'activities'
+          );
         `;
         
-        info.database.tables = tablesCheck.map(row => row.table_name);
+        info.database = {
+          connection: "successful",
+          connectionTest: result,
+          tableExists: tableResult[0]?.exists || false
+        };
       } catch (dbError) {
         info.database = {
-          connected: false,
+          connection: "failed",
           error: dbError.message
         };
       }
     } else {
       info.database = {
-        connected: false,
-        error: "No DATABASE_URL provided"
+        connection: "not configured",
+        error: "DATABASE_URL environment variable not set"
       };
     }
-
+    
     return res.status(200).json(info);
   } catch (error) {
     console.error("Debug endpoint error:", error);
     return res.status(500).json({
       error: "Debug endpoint error",
       message: error.message,
-      stack: process.env.NODE_ENV === "production" ? "hidden" : error.stack,
+      stack: process.env.NODE_ENV === "production" ? "hidden" : error.stack
     });
   }
 }
