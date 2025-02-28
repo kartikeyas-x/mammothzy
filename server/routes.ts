@@ -48,27 +48,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Add diagnostic route for troubleshooting
+  // Add comprehensive diagnostic route for troubleshooting
   app.get("/api/healthcheck", async (req, res) => {
     try {
-      // Check if we can connect to the database
-      await storage.getAllActivities();
+      // Use dedicated health check method
+      const dbStatus = await storage.healthCheck();
       
-      // Return environment info to help with debugging
+      // Return detailed environment info for debugging
       res.json({
-        status: "healthy",
+        status: dbStatus.status === "healthy" ? "healthy" : "unhealthy",
+        database: dbStatus,
         environment: process.env.NODE_ENV || "development",
         vercel: process.env.VERCEL ? true : false,
-        timestamp: new Date().toISOString()
+        region: process.env.VERCEL_REGION || "unknown",
+        nodeVersion: process.version,
+        timestamp: new Date().toISOString(),
+        memoryUsage: process.memoryUsage()
       });
     } catch (error) {
       console.error("Healthcheck failed:", error);
       res.status(500).json({
         status: "unhealthy",
         error: error.message,
+        stack: process.env.NODE_ENV === "production" ? "hidden" : error.stack,
         timestamp: new Date().toISOString()
       });
     }
+  });
+  
+  // Add a simple echo route to test basic functionality
+  app.get("/api/echo", (req, res) => {
+    res.json({
+      message: "Echo endpoint working",
+      query: req.query,
+      timestamp: new Date().toISOString()
+    });
   });
 
   const httpServer = createServer(app);

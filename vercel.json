@@ -3,8 +3,11 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/index.ts",
-      "use": "@vercel/node"
+      "src": "vercel/api/index.ts",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["server/**", "shared/**"]
+      }
     },
     {
       "src": "package.json",
@@ -16,8 +19,12 @@
   ],
   "routes": [
     {
+      "src": "/api/healthcheck",
+      "dest": "vercel/api/index.ts"
+    },
+    {
       "src": "/api/(.*)",
-      "dest": "api/index.ts"
+      "dest": "vercel/api/index.ts"
     },
     {
       "src": "/(assets|images|fonts)/.*",
@@ -25,9 +32,8 @@
       "dest": "/dist/public/$0"
     },
     {
-      "src": "/(.*)",
-      "dest": "/dist/public/$1",
-      "continue": true
+      "src": "/(.*\\.(js|css|ico|png|jpg|svg))",
+      "dest": "/dist/public/$1"
     },
     {
       "src": "/(.*)",
