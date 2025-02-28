@@ -12,6 +12,7 @@ async function testCreateActivity() {
     location_type: "In-person", // Explicitly set this field
     min_members: 1,
     max_members: 10,
+    address_line_1: "123 Test Street", // Include this required field
     city: "Test City",
     state: "Test State"
   };

@@ -25,17 +25,17 @@ export default function CreateActivity() {
       name: "",
       category: "Adventure & Games",
       description: "",
-      activityType: "Indoor",
-      locationType: "Provider Location",
-      minMembers: undefined,
-      maxMembers: undefined,
-      addressLine1: "",
-      addressLine2: "",
-      zipCode: "",
+      activity_type: "Indoor", // Changed from camelCase to snake_case
+      location_type: "Provider Location", // Changed from camelCase to snake_case
+      min_members: undefined, // Changed from camelCase to snake_case
+      max_members: undefined, // Changed from camelCase to snake_case
+      address_line_1: "", // Changed from camelCase to snake_case
+      address_line_2: "", // Changed from camelCase to snake_case
+      zip_code: "", // Changed from camelCase to snake_case
       city: "",
       state: "",
-      contactNumber: "",
-      contactName: "",
+      contact_number: "", // Changed from camelCase to snake_case
+      contact_name: "", // Changed from camelCase to snake_case
     },
   });
 
