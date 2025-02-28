@@ -1,15 +1,15 @@
 
 import express, { Request, Response } from "express";
 import serverless from "serverless-http";
+import { neon } from "@neondatabase/serverless";
+import { insertActivitySchema } from "../../shared/schema";
 import dotenv from 'dotenv';
 
 // Load environment variables
 dotenv.config();
 
-// Create an instance of your Express app
+// Create express app
 const app = express();
-
-// Middleware: parse JSON and URL-encoded data
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -19,31 +19,84 @@ app.use((req: Request, res: Response, next) => {
   next();
 });
 
-// Add a simple root API route
+// Root endpoint
 app.get("/api", (req: Request, res: Response) => {
   res.json({
     message: "API is running",
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || "development"
+    env: process.env.NODE_ENV || 'unknown'
   });
 });
 
-// Add activities route
+// Activities endpoints
 app.post("/api/activities", async (req: Request, res: Response) => {
   try {
-    // Just echo back the request for now
-    res.status(201).json({
-      message: "Activity creation endpoint (simplified for testing)",
-      receivedData: req.body,
-      timestamp: new Date().toISOString()
-    });
+    // Validate input using zod schema
+    const activity = insertActivitySchema.parse(req.body);
+    console.log("Activity data received:", JSON.stringify(activity));
+    
+    // Connect to database
+    if (!process.env.DATABASE_URL) {
+      throw new Error("DATABASE_URL environment variable is not set");
+    }
+    
+    const sql = neon(process.env.DATABASE_URL);
+    
+    // Insert activity with simple SQL to avoid dependencies
+    const result = await sql`
+      INSERT INTO activities (
+        name, category, description, activity_type, location_type, 
+        min_members, max_members, address_line_1, address_line_2, 
+        zip_code, city, state, contact_number, contact_name
+      ) VALUES (
+        ${activity.name}, ${activity.category}, ${activity.description}, 
+        ${activity.activity_type}, ${activity.location_type}, 
+        ${activity.min_members}, ${activity.max_members}, 
+        ${activity.address_line_1}, ${activity.address_line_2}, 
+        ${activity.zip_code}, ${activity.city}, ${activity.state}, 
+        ${activity.contact_number}, ${activity.contact_name}
+      ) RETURNING *
+    `;
+    
+    // Return created activity
+    res.status(201).json(result[0]);
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error creating activity:", error);
+    
+    if (error.name === "ZodError") {
+      return res.status(400).json({ 
+        error: "Invalid activity data", 
+        details: error.errors 
+      });
+    }
+    
+    res.status(500).json({ 
+      error: "Failed to create activity", 
+      message: process.env.NODE_ENV === 'production' ? null : error.message 
+    });
   }
 });
 
-// Simple error handler
+app.get("/api/activities", async (req: Request, res: Response) => {
+  try {
+    if (!process.env.DATABASE_URL) {
+      throw new Error("DATABASE_URL environment variable is not set");
+    }
+    
+    const sql = neon(process.env.DATABASE_URL);
+    const activities = await sql`SELECT * FROM activities`;
+    
+    res.json(activities);
+  } catch (error) {
+    console.error("Error fetching activities:", error);
+    res.status(500).json({ 
+      error: "Failed to fetch activities",
+      message: process.env.NODE_ENV === 'production' ? null : error.message
+    });
+  }
+});
+
+// Error handling middleware
 app.use((err: any, req: Request, res: Response, next: any) => {
   console.error('Server error:', err);
   res.status(500).json({
@@ -52,5 +105,5 @@ app.use((err: any, req: Request, res: Response, next: any) => {
   });
 });
 
-// Export the handler for Vercel
+// Export serverless handler
 export default serverless(app);

@@ -1,8 +1,13 @@
 
-export default function handler(req, res) {
+import { NextApiRequest, NextApiResponse } from 'next';
+
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
   res.status(200).json({
-    message: "API is up and running",
+    status: "ok",
+    message: "API is responding correctly",
     timestamp: new Date().toISOString(),
-    version: "1.0.0"
+    environment: process.env.NODE_ENV || 'development',
+    vercel: process.env.VERCEL ? true : false,
+    region: process.env.VERCEL_REGION || 'unknown'
   });
 }

@@ -28,6 +28,11 @@
       "dest": "vercel/api/debug-db.ts"
     },
     {
+      "src": "/api/activities",
+      "methods": ["GET", "POST"],
+      "dest": "vercel/api/index.ts"
+    },
+    {
       "src": "/api/(.*)",
       "dest": "vercel/api/index.ts"
     },
@@ -44,8 +49,5 @@
       "src": "/(.*)",
       "dest": "/dist/public/index.html"
     }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  ]
 }
