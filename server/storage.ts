@@ -1,34 +1,56 @@
-import { activities, type Activity, type InsertActivity } from "@shared/schema";
+import { drizzle } from "drizzle-orm/neon-http";
+import { neon } from "@neondatabase/serverless";
+import { activities, type InsertActivity } from "@shared/schema";
 
-export interface IStorage {
-  createActivity(activity: InsertActivity): Promise<Activity>;
-  getActivity(id: number): Promise<Activity | undefined>;
-  getAllActivities(): Promise<Activity[]>;
-}
-
-export class MemStorage implements IStorage {
-  private activities: Map<number, Activity>;
-  private currentId: number;
-
-  constructor() {
-    this.activities = new Map();
-    this.currentId = 1;
+// Function to get database connection
+// This pattern works better in serverless environments where connections might need to be reestablished
+const getDB = () => {
+  if (!process.env.DATABASE_URL) {
+    throw new Error("DATABASE_URL environment variable is not set");
   }
 
-  async createActivity(insertActivity: InsertActivity): Promise<Activity> {
-    const id = this.currentId++;
-    const activity: Activity = { ...insertActivity, id };
-    this.activities.set(id, activity);
-    return activity;
-  }
+  // Configure database with pooling for better performance in serverless
+  const sql = neon(process.env.DATABASE_URL, { 
+    pooling: true,
+    connectionString: process.env.DATABASE_URL
+  });
 
-  async getActivity(id: number): Promise<Activity | undefined> {
-    return this.activities.get(id);
-  }
+  return drizzle(sql);
+};
 
-  async getAllActivities(): Promise<Activity[]> {
-    return Array.from(this.activities.values());
-  }
-}
+export const storage = {
+  async createActivity(activity: InsertActivity) {
+    try {
+      const db = getDB();
+      const [created] = await db.insert(activities).values(activity).returning();
+      return created;
+    } catch (error) {
+      console.error("Error creating activity:", error);
+      throw error;
+    }
+  },
 
-export const storage = new MemStorage();
+  async getAllActivities() {
+    try {
+      const db = getDB();
+      return await db.select().from(activities).orderBy(activities.createdAt);
+    } catch (error) {
+      console.error("Error getting activities:", error);
+      throw error;
+    }
+  },
+
+  async getActivity(id: number) {
+    try {
+      const db = getDB();
+      const [activity] = await db
+        .select()
+        .from(activities)
+        .where(activities.id === id);
+      return activity;
+    } catch (error) {
+      console.error(`Error getting activity ${id}:`, error);
+      throw error;
+    }
+  },
+};
