@@ -1,42 +1,36 @@
 
-// Simple script to check a specific endpoint
+// Utility to check if a specific endpoint is working
 import fetch from 'node-fetch';
+import dotenv from 'dotenv';
 
-// Get endpoint from command line args
-const endpoint = process.argv[2] || '/api/healthcheck';
-const method = process.argv[3]?.toUpperCase() || 'GET';
-const data = process.argv[4] ? JSON.parse(process.argv[4]) : null;
-
-const API_BASE_URL = process.env.VERCEL_URL || 'https://mammothzy-git-main-kartikeyas-xs-projects.vercel.app';
-const fullUrl = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
+dotenv.config();
 
 async function checkEndpoint() {
-  console.log(`🔍 Checking ${method} ${fullUrl}`);
+  // Get the endpoint from command line args or use default
+  const args = process.argv.slice(2);
+  const endpoint = args[0] || '/api/healthcheck';
+  
+  // Get base URL from env or use default
+  const API_BASE_URL = process.env.VERCEL_URL || 'https://mammothzy-git-main-kartikeyas-xs-projects.vercel.app';
+  const fullUrl = `${API_BASE_URL}${endpoint}`;
+  
+  console.log(`🔍 Checking GET ${fullUrl}`);
   
   try {
-    const options = {
-      method,
-      headers: data ? { 'Content-Type': 'application/json' } : {}
-    };
-    
-    if (data) {
-      options.body = JSON.stringify(data);
-      console.log('With data:', data);
-    }
-    
-    const response = await fetch(fullUrl, options);
+    const response = await fetch(fullUrl);
     console.log(`📊 Status: ${response.status} ${response.statusText}`);
     
-    const contentType = response.headers.get('content-type');
-    if (contentType && contentType.includes('application/json')) {
-      const json = await response.json();
-      console.log('📄 Response:', JSON.stringify(json, null, 2));
-    } else {
+    // Try to parse as JSON first
+    try {
+      const data = await response.json();
+      console.log(`📄 Response:`, JSON.stringify(data, null, 2));
+    } catch (e) {
+      // If not JSON, get as text
       const text = await response.text();
-      console.log('📄 Response:', text);
+      console.log(`📄 Response:`, text);
     }
   } catch (error) {
-    console.error('❌ Error:', error.message);
+    console.error(`❌ Request failed:`, error.message);
   }
 }
 

@@ -1,4 +1,3 @@
-
 // API Test Script
 import fetch from 'node-fetch';
 import { insertActivitySchema } from './shared/schema.js';
@@ -8,107 +7,94 @@ dotenv.config();
 
 // Configuration 
 const API_BASE_URL = process.env.VERCEL_URL || 'https://mammothzy-git-main-kartikeyas-xs-projects.vercel.app';
-const TESTS = {
-  runAll: true,
-  getEcho: true,
-  getHealthcheck: true,
-  getDebugDb: true,
-  postActivity: true
-};
 
-async function runTests() {
-  console.log(`🧪 Running API tests against ${API_BASE_URL}`);
-  
+async function testAPI() {
+  console.log(`🔍 Testing API at ${API_BASE_URL}`);
+
+  // Test data
+  const testActivity = {
+    name: "Test Activity",
+    category: "Test Category",
+    description: "This is a test activity created by the API test script",
+    activity_type: "Indoor",
+    location_type: "Physical",
+    min_members: 1,
+    max_members: 10,
+    address_line_1: "123 Test St",
+    city: "Test City",
+    state: "Test State",
+    zip_code: "12345",
+    contact_name: "Test Contact",
+    contact_number: "123-456-7890"
+  };
+
   try {
-    // Test 1: GET /api/echo
-    if (TESTS.runAll || TESTS.getEcho) {
-      console.log('\n📡 Testing GET /api/echo');
-      const echoResponse = await fetch(`${API_BASE_URL}/api/echo?test=true`);
-      if (echoResponse.ok) {
-        const echoData = await echoResponse.json();
-        console.log('✅ Success:', echoData);
-      } else {
-        console.log(`❌ Failed: ${echoResponse.status} ${echoResponse.statusText}`);
-        console.log(await echoResponse.text());
-      }
+    // Test healthcheck endpoint
+    console.log(`🔍 Checking GET ${API_BASE_URL}/api/healthcheck`);
+    const healthResponse = await fetch(`${API_BASE_URL}/api/healthcheck`);
+    console.log(`📊 Status: ${healthResponse.status} ${healthResponse.statusText}`);
+
+    if (healthResponse.ok) {
+      const healthData = await healthResponse.json();
+      console.log(`📄 Response:`, JSON.stringify(healthData, null, 2));
+    } else {
+      const text = await healthResponse.text();
+      console.log(`📄 Response:`, text);
     }
-    
-    // Test 2: GET /api/healthcheck
-    if (TESTS.runAll || TESTS.getHealthcheck) {
-      console.log('\n📡 Testing GET /api/healthcheck');
-      const healthResponse = await fetch(`${API_BASE_URL}/api/healthcheck`);
-      if (healthResponse.ok) {
-        const healthData = await healthResponse.json();
-        console.log('✅ Success:', healthData);
-      } else {
-        console.log(`❌ Failed: ${healthResponse.status} ${healthResponse.statusText}`);
-        console.log(await healthResponse.text());
-      }
-    }
-    
-    // Test 3: GET /api/debug-db
-    if (TESTS.runAll || TESTS.getDebugDb) {
-      console.log('\n📡 Testing GET /api/debug-db');
-      const debugResponse = await fetch(`${API_BASE_URL}/api/debug-db`);
-      if (debugResponse.ok) {
-        const debugData = await debugResponse.json();
-        console.log('✅ Success:', debugData);
-      } else {
-        console.log(`❌ Failed: ${debugResponse.status} ${debugResponse.statusText}`);
-        console.log(await debugResponse.text());
-      }
-    }
-    
-    // Test 4: POST /api/activities
-    if (TESTS.runAll || TESTS.postActivity) {
-      console.log('\n📡 Testing POST /api/activities');
-      
-      const testActivity = {
-        name: `Test Activity ${new Date().toISOString()}`,
-        category: "API Testing",
-        description: "This is a test activity created by the API test script",
-        activity_type: "test",
-        location_type: "virtual",
-        min_members: 1,
-        max_members: 10,
-        address_line_1: "123 Test St",
-        city: "Testville",
-        state: "TS",
-        contact_name: "Test User"
-      };
-      
-      console.log('📦 Sending data:', testActivity);
-      
-      const createResponse = await fetch(`${API_BASE_URL}/api/activities`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(testActivity)
-      });
-      
-      if (createResponse.ok) {
-        const createdActivity = await createResponse.json();
-        console.log('✅ Success:', createdActivity);
-      } else {
-        console.log(`❌ Failed: ${createResponse.status} ${createResponse.statusText}`);
-        try {
-          const errorText = await createResponse.text();
-          console.log('Error response:', errorText);
-          try {
-            const errorJson = JSON.parse(errorText);
-            console.log('Parsed error:', errorJson);
-          } catch (e) {
-            // Not JSON, which is fine
-          }
-        } catch (e) {
-          console.log('Could not read response text');
+
+    // Test activities POST endpoint
+    console.log(`\n🔍 Testing POST ${API_BASE_URL}/api/activities`);
+    const createResponse = await fetch(`${API_BASE_URL}/api/activities`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(testActivity),
+    });
+
+    console.log(`📊 Status: ${createResponse.status} ${createResponse.statusText}`);
+
+    if (createResponse.ok) {
+      const createData = await createResponse.json();
+      console.log(`📄 Response:`, JSON.stringify(createData, null, 2));
+
+      // Test GET single activity if creation was successful
+      if (createData.id) {
+        console.log(`\n🔍 Testing GET ${API_BASE_URL}/api/activities/${createData.id}`);
+        const getResponse = await fetch(`${API_BASE_URL}/api/activities/${createData.id}`);
+        console.log(`📊 Status: ${getResponse.status} ${getResponse.statusText}`);
+
+        if (getResponse.ok) {
+          const getData = await getResponse.json();
+          console.log(`📄 Response:`, JSON.stringify(getData, null, 2));
+        } else {
+          const text = await getResponse.text();
+          console.log(`📄 Response:`, text);
         }
       }
+    } else {
+      const text = await createResponse.text();
+      console.log(`📄 Response:`, text);
     }
+
+    // Test GET all activities
+    console.log(`\n🔍 Testing GET ${API_BASE_URL}/api/activities`);
+    const getAllResponse = await fetch(`${API_BASE_URL}/api/activities`);
+    console.log(`📊 Status: ${getAllResponse.status} ${getAllResponse.statusText}`);
+
+    if (getAllResponse.ok) {
+      const getAllData = await getAllResponse.json();
+      console.log(`📄 Response: Found ${getAllData.length} activities`);
+      // Don't print all activities to avoid console clutter
+    } else {
+      const text = await getAllResponse.text();
+      console.log(`📄 Response:`, text);
+    }
+
   } catch (error) {
-    console.error('❌ Test execution error:', error);
+    console.error('❌ API test failed:', error.message);
   }
 }
 
-runTests();
+// Run the tests
+testAPI();
