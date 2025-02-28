@@ -1,4 +1,5 @@
-import { NextApiRequest, NextApiResponse } from "next";
+// Using Express-compatible types instead of Next.js
+import type { Request, Response } from "express";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   res.status(200).json({
