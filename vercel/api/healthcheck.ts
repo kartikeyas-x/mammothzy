@@ -1,7 +1,7 @@
-// Using Express-compatible types instead of Next.js
+
 import type { Request, Response } from "express";
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default function handler(req: Request, res: Response) {
   res.status(200).json({
     status: "healthy",
     timestamp: new Date().toISOString(),
