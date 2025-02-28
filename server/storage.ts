@@ -49,6 +49,7 @@ class Storage {
         activity_type: activity.activity_type || "Indoor", // Default to Indoor if not specified
         location_type: activity.location_type || "In-person", // Default to In-person if not specified
         address_line_1: activity.address_line_1 || "N/A", // Default for the not-null constraint
+        zip_code: activity.zip_code || "00000", // Default for the not-null constraint
       };
       
       console.log("Creating activity with defaults:", JSON.stringify(activityWithDefaults));
