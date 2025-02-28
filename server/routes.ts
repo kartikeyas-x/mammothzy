@@ -8,6 +8,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/activities", async (req, res) => {
     try {
       const activity = insertActivitySchema.parse(req.body);
+      
+      // Log the activity for debugging
+      console.log("Attempting to create activity:", JSON.stringify(activity));
+      
+      // Check if storage module is available
+      if (!storage || typeof storage.createActivity !== 'function') {
+        throw new Error("Storage module or createActivity function is not properly defined");
+      }
+      
       const created = await storage.createActivity(activity);
       res.status(201).json(created);
     } catch (error) {
@@ -17,9 +26,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Invalid activity data", details: error.errors });
       }
       
+      // More detailed error response
       res.status(500).json({ 
         error: "Server error while creating activity",
-        message: process.env.NODE_ENV === 'production' ? undefined : error.message
+        message: process.env.NODE_ENV === 'production' ? undefined : error.message,
+        stack: process.env.NODE_ENV === 'production' ? undefined : error.stack
       });
     }
   });

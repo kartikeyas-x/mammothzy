@@ -1,43 +1,30 @@
+require('dotenv').config();
 
-// A simple script to verify database connection
-import dotenv from "dotenv";
-import { storage } from './server/storage.js';
+const postgres = require('postgres');
 
-// Load environment variables
-dotenv.config();
+async function verifyConnection() {
+  console.log('Attempting to connect to database...');
+  console.log(`DATABASE_URL: ${process.env.DATABASE_URL.slice(0, 25)}...`);
 
-// If DATABASE_URL is not set, use the provided connection string
-if (!process.env.DATABASE_URL) {
-  process.env.DATABASE_URL = "postgresql://neondb_owner:npg_iswFG0ZaHIY5@ep-broad-mouse-a8asxfw4-pooler.eastus2.azure.neon.tech/neondb?sslmode=require";
-  console.log("Using provided connection string");
-}
-
-// Check for NODE_ENV
-const nodeEnv = process.env.NODE_ENV || 'development';
-console.log(`Current environment: ${nodeEnv}`);
-console.log(`Database URL: ${process.env.DATABASE_URL ? '✅ Set' : '❌ Not set'}`);
-
-// Simple health check
-async function main() {
   try {
-    console.log('Testing database connection...');
-    
-    // Basic connection test
-    const result = await storage.healthCheck();
-    console.log('Database status:', result);
-    
-    if (result.status === 'healthy') {
-      console.log('✅ Database connection successful!');
-    } else {
-      console.error('❌ Database connection failed:', result.error);
-    }
+    const sql = postgres(process.env.DATABASE_URL);
+    const result = await sql`SELECT NOW()`;
+    console.log('Database connection successful!');
+    console.log('Current time from database:', result[0].now);
+    await sql.end();
+    return true;
   } catch (error) {
-    console.error('❌ Error testing database:', error);
-    console.error(error);
-  } finally {
-    // Force exit after completion (to avoid hanging connections)
-    process.exit(0);
+    console.error('Failed to connect to database:', error.message);
+    return false;
   }
 }
 
-main();
+verifyConnection().then(success => {
+  if (!success) {
+    console.log('\nTroubleshooting tips:');
+    console.log('1. Check that your DATABASE_URL is correct in the .env file');
+    console.log('2. Verify that your database server is running');
+    console.log('3. Check that network access to your database is allowed');
+  }
+  process.exit(success ? 0 : 1);
+});
