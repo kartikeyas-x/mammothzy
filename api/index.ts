@@ -1,24 +1,20 @@
 // File: api/index.ts
 
 import express, { Request, Response, NextFunction } from "express";
-import { registerRoutes } from "../server/routes"; // from your server folder
-import { serveStatic, log } from "../server/vite";   // from your server folder
+import { registerRoutes } from "../server/routes"; // Your existing API routes
+import { serveStatic, log } from "../server/vite";   // Your static serving and logging functions
 import serverless from "serverless-http";
 
 // Create an instance of your Express app
 const app = express();
 
-// Setup middleware for JSON parsing and URL encoding
+// Middleware: parse JSON and URL-encoded data
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Example middleware for logging requests
+// Example middleware for logging
 app.use((req, res, next) => {
   const start = Date.now();
-  const originalJson = res.json.bind(res);
-  res.json = function (body, ...args) {
-    return originalJson(body, ...args);
-  };
   res.on("finish", () => {
     const duration = Date.now() - start;
     if (req.path.startsWith("/api")) {
@@ -28,13 +24,13 @@ app.use((req, res, next) => {
   next();
 });
 
-// Register API routes (this is your existing API setup)
+// Register your API routes
 await registerRoutes(app);
 
-// Serve static files in production (your Vite-built frontend)
+// Serve static files (only in production; adjust if needed)
 if (process.env.NODE_ENV !== "development") {
   serveStatic(app);
 }
 
-// Wrap the Express app using serverless-http
+// Wrap the Express app into a serverless function
 export default serverless(app);
