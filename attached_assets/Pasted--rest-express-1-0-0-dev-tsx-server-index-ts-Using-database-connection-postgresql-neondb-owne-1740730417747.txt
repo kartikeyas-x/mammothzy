@@ -1,0 +1,67 @@
+
+> rest-express@1.0.0 dev
+> tsx server/index.ts
+
+Using database connection: postgresql://neondb_owner:npg_...
+8:12:49 AM [express] serving on port 5000
+Attempting to create activity: {"name":"Kartikeya Soni","category":"Adventure & Games","description":"wertsysudikflkdjnhgzfsv","activity_type":"Indoor","min_members":1,"max_members":1,"city":"Kota","state":"Arizona"}
+Creating activity with defaults: {"name":"Kartikeya Soni","category":"Adventure & Games","description":"wertsysudikflkdjnhgzfsv","activity_type":"Indoor","min_members":1,"max_members":1,"city":"Kota","state":"Arizona","location_type":"In-person","address_line_1":"N/A","zip_code":"00000"}
+Failed to create activity: NeonDbError: null value in column "contact_number" of relation "activities" violates not-null constraint
+    at execute (file:///home/runner/workspace/node_modules/@neondatabase/serverless/index.mjs:1556:55)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async NeonHttpPreparedQuery.execute (/home/runner/workspace/node_modules/src/neon-http/session.ts:68:18)
+    at async Storage.createActivity (/home/runner/workspace/server/storage.ts:57:22)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:20:23) {
+  severity: 'ERROR',
+  code: '23502',
+  detail: 'Failing row contains (9, Kartikeya Soni, Adventure & Games, wertsysudikflkdjnhgzfsv, Indoor, In-person, 1, 1, N/A, null, 00000, Kota, Arizona, null, null).',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'activities',
+  column: 'contact_number',
+  dataType: undefined,
+  constraint: undefined,
+  file: 'execMain.c',
+  line: '1982',
+  routine: 'ExecConstraints',
+  sourceError: undefined
+}
+Error in POST /api/activities: Error: Database error: null value in column "contact_number" of relation "activities" violates not-null constraint
+    at Storage.createActivity (/home/runner/workspace/server/storage.ts:68:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:20:23)
+8:13:17 AM [express] POST /api/activities 500 in 850ms :: {"error":"Server error while creating acti…
+Attempting to create activity: {"name":"Kartikeya Soni","category":"Adventure & Games","description":"wertsysudikflkdjnhgzfsv","activity_type":"Indoor","min_members":1,"max_members":1,"city":"Kota","state":"Arizona"}
+Creating activity with defaults: {"name":"Kartikeya Soni","category":"Adventure & Games","description":"wertsysudikflkdjnhgzfsv","activity_type":"Indoor","min_members":1,"max_members":1,"city":"Kota","state":"Arizona","location_type":"In-person","address_line_1":"N/A","zip_code":"00000"}
+Failed to create activity: NeonDbError: null value in column "contact_number" of relation "activities" violates not-null constraint
+    at execute (file:///home/runner/workspace/node_modules/@neondatabase/serverless/index.mjs:1556:55)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async NeonHttpPreparedQuery.execute (/home/runner/workspace/node_modules/src/neon-http/session.ts:68:18)
+    at async Storage.createActivity (/home/runner/workspace/server/storage.ts:57:22)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:20:23) {
+  severity: 'ERROR',
+  code: '23502',
+  detail: 'Failing row contains (10, Kartikeya Soni, Adventure & Games, wertsysudikflkdjnhgzfsv, Indoor, In-person, 1, 1, N/A, null, 00000, Kota, Arizona, null, null).',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'activities',
+  column: 'contact_number',
+  dataType: undefined,
+  constraint: undefined,
+  file: 'execMain.c',
+  line: '1982',
+  routine: 'ExecConstraints',
+  sourceError: undefined
+}
+Error in POST /api/activities: Error: Database error: null value in column "contact_number" of relation "activities" violates not-null constraint
+    at Storage.createActivity (/home/runner/workspace/server/storage.ts:68:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:20:23)
