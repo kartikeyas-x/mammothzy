@@ -1,7 +1,6 @@
 
 import express from "express";
 import serverless from "serverless-http";
-import { registerRoutes } from "../../server/routes";
 
 // Create Express app
 const app = express();
@@ -16,15 +15,14 @@ app.use((req, res, next) => {
   next();
 });
 
-// Register API routes
-try {
-  registerRoutes(app);
-} catch (error) {
-  console.error("Error registering routes:", error);
-  app.use('/api', (req, res) => {
-    res.status(500).json({ error: "Server configuration error" });
+// Basic routes for testing
+app.get('/api', (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    message: "API is working",
+    timestamp: new Date().toISOString()
   });
-}
+});
 
 // Export serverless handler
 export default serverless(app);

@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
-import { db } from "../../db";
-import os from "os";
 
-export default async function debugHandler(req: Request, res: Response) {
+export default function debugHandler(req: Request, res: Response) {
   // Collect debug information
   const debugInfo = {
     timestamp: new Date().toISOString(),
@@ -18,37 +16,8 @@ export default async function debugHandler(req: Request, res: Response) {
       VERCEL: process.env.VERCEL,
       VERCEL_REGION: process.env.VERCEL_REGION,
       DATABASE_URL_EXISTS: Boolean(process.env.DATABASE_URL)
-    },
-    nodeVersion: process.version,
-    memoryUsage: process.memoryUsage(),
-    cpus: os.cpus().length,
-    uptime: process.uptime(),
-    freemem: os.freemem(),
-    totalmem: os.totalmem(),
-    databaseInfo: null as any
+    }
   };
-
-  // Try to check database connectivity
-  try {
-    const dbResult = await db.query.sql`SELECT NOW()`;
-    debugInfo.databaseInfo = {
-      connected: true,
-      result: dbResult
-    };
-  } catch (dbError) {
-    debugInfo.databaseInfo = {
-      connected: false,
-      error: String(dbError)
-    };
-  }
-
-  // Try to load package.json
-  try {
-    const pkg = await import("../../package.json", { assert: { type: "json" } });
-    debugInfo.dependencies = pkg.default.dependencies;
-  } catch (error) {
-    debugInfo.packageJsonError = String(error);
-  }
 
   res.status(200).json(debugInfo);
 }

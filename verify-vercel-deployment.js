@@ -32,8 +32,10 @@ async function main() {
   
   const endpoints = [
     '/api/healthcheck',
-    '/api/ping',
-    '/api/debug-db'
+    '/api',
+    '/api/debug-db',
+    '/api/debug',
+    '/api/detailed-debug'
   ];
   
   let success = true;
