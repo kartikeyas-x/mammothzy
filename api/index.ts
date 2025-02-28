@@ -3,12 +3,12 @@
 import express, { Request, Response, NextFunction } from "express";
 import { registerRoutes } from "../server/routes"; // from your server folder
 import { serveStatic, log } from "../server/vite";   // from your server folder
-import { createServer, proxy } from "@vercel/node";
+import serverless from "serverless-http";
 
-// Create an Express application instance
+// Create an instance of your Express app
 const app = express();
 
-// Setup JSON and URL-encoded middleware
+// Setup middleware for JSON parsing and URL encoding
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -28,21 +28,13 @@ app.use((req, res, next) => {
   next();
 });
 
-// Register API routes using your existing server/routes.ts
-// Note: registerRoutes returns a Promise of an HTTP Server,
-// but here we only need it to set up routes on the app.
+// Register API routes (this is your existing API setup)
 await registerRoutes(app);
 
-// For production, serve static files (the Vite-built frontend)
-// This call uses your existing serveStatic function from server/vite.ts.
+// Serve static files in production (your Vite-built frontend)
 if (process.env.NODE_ENV !== "development") {
   serveStatic(app);
 }
 
-// Wrap the Express app using Vercel's Node adapter.
-const server = createServer(app);
-
-// Export the handler function that Vercel will invoke per request.
-export default (req: Request, res: Response) => {
-  proxy(server, req, res);
-};
+// Wrap the Express app using serverless-http
+export default serverless(app);
