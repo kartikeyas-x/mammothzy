@@ -1,6 +1,16 @@
 
 // A simple script to verify database connection
+import dotenv from "dotenv";
 import { storage } from './server/storage.js';
+
+// Load environment variables
+dotenv.config();
+
+// If DATABASE_URL is not set, use the provided connection string
+if (!process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = "postgresql://neondb_owner:npg_iswFG0ZaHIY5@ep-broad-mouse-a8asxfw4-pooler.eastus2.azure.neon.tech/neondb?sslmode=require";
+  console.log("Using provided connection string");
+}
 
 // Check for NODE_ENV
 const nodeEnv = process.env.NODE_ENV || 'development';
