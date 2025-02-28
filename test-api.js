@@ -1,6 +1,6 @@
+
 // API Test Script
 import fetch from 'node-fetch';
-import { insertActivitySchema } from './shared/schema.js';
 import dotenv from 'dotenv';
 
 dotenv.config();

@@ -20,14 +20,11 @@ async function checkEndpoint() {
     const response = await fetch(fullUrl);
     console.log(`📊 Status: ${response.status} ${response.statusText}`);
     
-    // Try to parse as JSON first
     try {
-      const data = await response.json();
-      console.log(`📄 Response:`, JSON.stringify(data, null, 2));
+      const data = await response.text();
+      console.log(`📄 Response:`, data.substring(0, 500) + (data.length > 500 ? '...' : ''));
     } catch (e) {
-      // If not JSON, get as text
-      const text = await response.text();
-      console.log(`📄 Response:`, text);
+      console.error(`❌ Response error:`, e.message);
     }
   } catch (error) {
     console.error(`❌ Request failed:`, error.message);
